@@ -992,11 +992,7 @@ namespace UnityEditor.VFX
             }
             finally
             {
-                EditorUtility.DisplayProgressBar(progressBarTitle, "Importing VFX", 11 / nbSteps);
-                Profiler.BeginSample("VFXEditor.CompileAsset:ImportAsset");
-                AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate); //This should compile the shaders on the C++ size
-                AssetDatabase.LoadAssetAtPath<VisualEffectAsset>(assetPath); // Force the reload to invoke the AwakeFromLoad as Import doesnt do it
-                Profiler.EndSample();
+
 
                 Profiler.EndSample();
                 EditorUtility.ClearProgressBar();

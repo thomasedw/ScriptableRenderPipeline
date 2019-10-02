@@ -494,7 +494,10 @@ namespace UnityEditor.VFX
                 string assetName = string.Empty;
                 try
                 {
-                    assetName = GetGraph().visualEffectResource.asset.name;
+                    var resource = GetGraph().visualEffectResource;
+                    var asset = resource.asset;
+
+                    assetName = asset!= null ? asset.name : resource.name;
                 }
                 catch(Exception e)
                 {
