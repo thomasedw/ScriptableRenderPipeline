@@ -15,7 +15,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace UnityEditor.VFX
 {
-    class VFXGraphgPreprocessor : AssetPostprocessor
+    class VFXGraphPreprocessor : AssetPostprocessor
     {
         void OnPreprocessAsset()
         {
@@ -286,7 +286,7 @@ namespace UnityEditor.VFX
             try
             {
                 EditorUtility.DisplayProgressBar("Saving...", "Rebuild", 0);
-                RecompileIfNeeded(false,true);
+                AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(visualEffectResource));
                 m_saved = true;
             }
             catch (Exception e)
@@ -435,6 +435,11 @@ namespace UnityEditor.VFX
                     RecompileIfNeeded(false, true);
                 }
             }
+        }
+
+        public bool IsExpressionGraphDirty()
+        {
+            return m_ExpressionGraphDirty;
         }
 
         public void SetExpressionGraphDirty()
