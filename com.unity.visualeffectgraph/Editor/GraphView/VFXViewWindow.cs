@@ -260,6 +260,9 @@ namespace  UnityEditor.VFX.UI
 
                         if (autoCompile && graph.IsExpressionGraphDirty())
                             AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(graphView.controller.model));
+                        else
+                            graph.RecompileIfNeeded(true, true);
+                        
                         controller.RecompileExpressionGraphIfNeeded();
                     }
                 }
