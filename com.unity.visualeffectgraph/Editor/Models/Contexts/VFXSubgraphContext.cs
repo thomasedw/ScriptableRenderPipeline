@@ -342,8 +342,8 @@ namespace UnityEditor.VFX
 
             var inputExpressions = new List<VFXExpression>();
 
-            foreach (var subSlot in inputSlots.SelectMany(t => t.GetExpressionSlots()))
-                inputExpressions.Add(subSlot.GetExpression());
+                foreach (var subSlot in inputSlots.SelectMany(t => t.GetExpressionSlots()))
+                    inputExpressions.Add(subSlot.GetExpression());
 
             VFXSubgraphUtility.TransferExpressionToParameters(inputExpressions, GetSortedInputParameters());
             foreach (var slot in toInvalidate)
@@ -366,7 +366,7 @@ namespace UnityEditor.VFX
 
         protected override void OnInvalidate(VFXModel model, InvalidationCause cause)
         {
-            if (cause == InvalidationCause.kSettingChanged || cause == InvalidationCause.kExpressionInvalidated)
+            if( cause == InvalidationCause.kSettingChanged || cause == InvalidationCause.kExpressionInvalidated)
             {
 
                 if (cause == InvalidationCause.kSettingChanged)
@@ -383,7 +383,7 @@ namespace UnityEditor.VFX
 
                     }
                     if (m_Subgraph != null || object.ReferenceEquals(m_Subgraph, null)) // do not recreate subchildren if the subgraph is not available but is not null
-                        RecreateCopy();
+                    RecreateCopy();
                 }
 
                 base.OnInvalidate(model, cause);
@@ -407,19 +407,20 @@ namespace UnityEditor.VFX
 
             if( m_Subgraph != null && m_SubChildren == null)
                 RecreateCopy();
-            if(m_SubChildren != null)
-            {
-                foreach (var child in m_SubChildren)
-                {
-                    if (!(child is VFXParameter))
-                    {
-                        objs.Add(child);
 
-                        if (child is VFXModel)
-                            (child as VFXModel).CollectDependencies(objs, false);
-                    }
+            if (m_SubChildren != null)
+            {
+            foreach (var child in m_SubChildren)
+            {
+                if( ! (child is VFXParameter) )
+                {
+                    objs.Add(child);
+
+                    if (child is VFXModel)
+                        (child as VFXModel).CollectDependencies(objs, false);
                 }
             }
         }
     }
+}
 }
