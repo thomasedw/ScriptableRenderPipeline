@@ -1,26 +1,28 @@
-using UnityEngine.Profiling;
-
 namespace UnityEngine.Rendering.HighDefinition
 {
-    internal enum CustomSamplerId
+    internal enum HDProfileId
     {
         PushGlobalParameters,
         CopySetDepthBuffer,
         CopyDepthBuffer,
+        CopyDepthInTargetTexture,
         HTileForSSS,
         Forward,
         RenderSSAO,
-        ResolveSSAO,
+        HorizonSSAO,
+        DenoiseSSAO,
+        UpSampleSSAO,
         RenderShadowMaps,
         ScreenSpaceShadows,
         BuildLightList,
         ContactShadows,
-        BlitToFinalRT,
+        BlitToFinalRTDevBuildOnly,
         Distortion,
         ApplyDistortion,
         DepthPrepass,
         TransparentDepthPrepass,
         GBuffer,
+        GBufferDebug,
         DBufferRender,
         DBufferPrepareDrawData,
         DBufferNormal,
@@ -52,12 +54,17 @@ namespace UnityEngine.Rendering.HighDefinition
         ClearHDRTarget,
         ClearGBuffer,
         ClearSsrBuffers,
-        HDRenderPipelineRender,
+        HDRenderPipelineRenderCamera,
+        HDRenderPipelineRenderAOV,
         CullResultsCull,
         CopyDepth,
         UpdateStencilCopyForSSRExclusion,
         GizmosPrePostprocess,
         Gizmos,
+        RenderWireFrame,
+        PushToColorPicker,
+        ResolveMSAAColor,
+        ResolveMSAADepth,
 
         RaytracingBuildCluster,
         RaytracingCullLights,
@@ -69,17 +76,20 @@ namespace UnityEngine.Rendering.HighDefinition
         RaytracingLightShadow,
         RaytracingIntegrateIndirectDiffuse,
         RaytracingFilterIndirectDiffuse,
-        RaytracingDebug,
+        RaytracingDebugOverlay,
 
         // Profile sampler for tile pass
-        TPPrepareLightsForGPU,
-        TPPushGlobalParameters,
-        TPTiledLightingDebug,
-        TPScreenSpaceShadows,
-        TPTileSettingsEnableTileAndCluster,
-        TPForwardPass,
-        TPDisplayShadows,
-        TPRenderDeferredLighting,
+        PrepareLightsForGPU,
+        TilePassPushGlobalParameters,
+        TiledLightingDebug,
+        TilePassTileSettingsEnableTileAndCluster,
+        TilePassForwardPass,
+        DisplayShadows,
+
+        RenderDeferredLighting,
+        RenderDeferredLightingComputeAsPixel,
+        RenderDeferredLightingSinglePass,
+        RenderDeferredLightingSinglePassMRT,
 
         // Misc
         VolumeUpdate,
@@ -92,7 +102,8 @@ namespace UnityEngine.Rendering.HighDefinition
         // Post-processing
         AlphaCopy,
         StopNaNs,
-        Exposure,
+        FixedExposure,
+        DynamicExposure,
         TemporalAntialiasing,
         DepthOfField,
         DepthOfFieldKernel,
@@ -109,6 +120,7 @@ namespace UnityEngine.Rendering.HighDefinition
         MotionBlurMotionVecPrep,
         MotionBlurTileMinMax,
         MotionBlurTileNeighbourhood,
+        MotionBlurTileScattering,
         MotionBlurKernel,
         PaniniProjection,
         Bloom,
@@ -120,29 +132,6 @@ namespace UnityEngine.Rendering.HighDefinition
         CustomPostProcessBeforePP,
         CustomPostProcessAfterPP,
         CustomPostProcessBeforeTransparent,
-
-        Max
     }
 
-    internal static class HDCustomSamplerExtension
-    {
-        static CustomSampler[] s_Samplers;
-
-        public static CustomSampler GetSampler(this CustomSamplerId samplerId)
-        {
-            // Lazy init
-            if (s_Samplers == null)
-            {
-                s_Samplers = new CustomSampler[(int)CustomSamplerId.Max];
-
-                for (int i = 0; i < (int)CustomSamplerId.Max; i++)
-                {
-                    var id = (CustomSamplerId)i;
-                    s_Samplers[i] = CustomSampler.Create("C#_" + id);
-                }
-            }
-
-            return s_Samplers[(int)samplerId];
-        }
-    }
 }

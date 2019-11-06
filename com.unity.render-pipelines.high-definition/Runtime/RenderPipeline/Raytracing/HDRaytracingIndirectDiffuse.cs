@@ -56,7 +56,7 @@ namespace UnityEngine.Rendering.HighDefinition
             // If we are not supposed to evaluate the indirect diffuse term, quit right away
             if (!ValidIndirectDiffuseState(hdCamera))
                 return;
-            
+
             RenderPipelineSettings.RaytracingTier currentTier = m_Asset.currentPlatformRenderPipelineSettings.supportedRaytracingTier;
             switch (currentTier)
             {
@@ -167,7 +167,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             ComputeShader indirectDiffuseCS = m_Asset.renderPipelineRayTracingResources.indirectDiffuseRaytracingCS;
 
-            using (new ProfilingSample(cmd, "Ray Trace Indirect Diffuse", CustomSamplerId.RaytracingIntegrateIndirectDiffuse.GetSampler()))
+            using (new ProfilingScope(cmd, "Ray Trace Indirect Diffuse", HDProfileId.RaytracingIntegrateIndirectDiffuse.GetSampler()))
             {
                 if (settings.deferredMode.value)
                 {
@@ -176,7 +176,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
                     // Inject the ray-tracing sampling data
                     blueNoise.BindDitheredRNGData8SPP(cmd);
-                
+
                     // Bind all the required textures
                     cmd.SetComputeTextureParam(indirectDiffuseCS, currentKernel, HDShaderIDs._DepthTexture, m_SharedRTManager.GetDepthStencilBuffer());
                     cmd.SetComputeTextureParam(indirectDiffuseCS, currentKernel, HDShaderIDs._NormalBufferTexture, m_SharedRTManager.GetNormalBuffer());
@@ -227,7 +227,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 }
             }
 
-            using (new ProfilingSample(cmd, "Filter Indirect Diffuse", CustomSamplerId.RaytracingFilterIndirectDiffuse.GetSampler()))
+            using (new ProfilingScope(cmd, "Filter Indirect Diffuse", HDProfileId.RaytracingFilterIndirectDiffuse.GetSampler()))
             {
                 // Fetch the right filter to use
                 int currentKernel = indirectDiffuseCS.FindKernel(settings.fullResolution.value ? "IndirectDiffuseIntegrationUpscaleFullRes" : "IndirectDiffuseIntegrationUpscaleHalfRes");
@@ -342,7 +342,7 @@ namespace UnityEngine.Rendering.HighDefinition
             CoreUtils.SetKeyword(cmd, "DIFFUSE_LIGHTING_ONLY", false);
             CoreUtils.SetKeyword(cmd, "MULTI_BOUNCE_INDIRECT", false);
 
-            using (new ProfilingSample(cmd, "Filter Indirect Diffuse", CustomSamplerId.RaytracingFilterIndirectDiffuse.GetSampler()))
+            using (new ProfilingScope(cmd, "Filter Indirect Diffuse", HDProfileId.RaytracingFilterIndirectDiffuse.GetSampler()))
             {
                 if (giSettings.denoise.value)
                 {
@@ -364,7 +364,7 @@ namespace UnityEngine.Rendering.HighDefinition
             // Apply the first pass of our denoiser
             HDDiffuseDenoiser diffuseDenoiser = GetDiffuseDenoiser();
             diffuseDenoiser.DenoiseBuffer(cmd, hdCamera, m_IDIntermediateBuffer1, m_IDIntermediateBuffer0, settings.denoiserRadius.value, singleChannel: false, halfResolutionFilter: settings.halfResolutionDenoiser.value);
-            
+
             // If the second pass is requested, do it otherwise blit
             if (settings.secondDenoiserPass.value)
             {

@@ -48,7 +48,7 @@ namespace UnityEngine.Rendering.HighDefinition
             float invOmegaP = (6.0f * source.width * source.width) / (4.0f * Mathf.PI);
 
             // Copy the first mip
-            using (new ProfilingSample(cmd, "Copy Original Mip"))
+            using (new ProfilingScope(cmd, "Copy Original Mip"))
             {
                 for (int f = 0; f < 6; f++)
                 {
@@ -64,7 +64,7 @@ namespace UnityEngine.Rendering.HighDefinition
             {
                 props.SetFloat("_Level", mip);
 
-                using (new ProfilingSample(cmd, "Filter Cubemap Mip {0}", mip))
+                using (new ProfilingScope(cmd, "Filter Cubemap Mip {0}", mip))
                 {
                     for (int face = 0; face < 6; ++face)
                     {

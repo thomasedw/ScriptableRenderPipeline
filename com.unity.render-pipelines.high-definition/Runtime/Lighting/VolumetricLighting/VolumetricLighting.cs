@@ -503,7 +503,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (!Fog.IsVolumetricLightingEnabled(hdCamera))
                 return densityVolumes;
 
-            using (new ProfilingSample(cmd, "Prepare Visible Density Volume List"))
+            using (new ProfilingScope(cmd, "Prepare Visible Density Volume List"))
             {
                 Vector3 camPosition = hdCamera.camera.transform.position;
                 Vector3 camOffset   = Vector3.zero;// World-origin-relative
@@ -648,7 +648,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (!Fog.IsVolumetricLightingEnabled(hdCamera))
                 return;
 
-            using (new ProfilingSample(cmd, "Volume Voxelization"))
+            using (new ProfilingScope(cmd, "Volume Voxelization"))
             {
                 var parameters = PrepareVolumeVoxelizationParameters(hdCamera);
                 VolumeVoxelizationPass(parameters, m_DensityBufferHandle, m_VisibleVolumeBoundsBuffer, m_VisibleVolumeDataBuffer, m_TileAndClusterData.bigTileLightList, cmd);
@@ -791,7 +791,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (!Fog.IsVolumetricLightingEnabled(hdCamera))
                 return;
 
-            using (new ProfilingSample(cmd, "Volumetric Lighting"))
+            using (new ProfilingScope(cmd, "Volumetric Lighting"))
             {
                 var parameters = PrepareVolumetricLightingParameters(hdCamera, frameIndex);
 

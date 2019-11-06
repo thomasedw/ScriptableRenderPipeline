@@ -69,7 +69,7 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             m_ComputeGgxIblSampleDataCS.SetTexture(m_ComputeGgxIblSampleDataKernel, "output", m_GgxIblSampleData);
 
-            using (new ProfilingSample(cmd, "Compute GGX IBL Sample Data"))
+            using (new ProfilingScope(cmd, "Compute GGX IBL Sample Data"))
             {
                 cmd.DispatchCompute(m_ComputeGgxIblSampleDataCS, m_ComputeGgxIblSampleDataKernel, 1, 1, 1);
             }
@@ -93,7 +93,7 @@ namespace UnityEngine.Rendering.HighDefinition
             }
 
             // Copy the first mip
-            using (new ProfilingSample(cmd, "Copy Original Mip"))
+            using (new ProfilingScope(cmd, "Copy Original Mip"))
             {
                 for (int f = 0; f < 6; f++)
                 {
@@ -120,7 +120,7 @@ namespace UnityEngine.Rendering.HighDefinition
             {
                 props.SetFloat("_Level", mip);
 
-                using (new ProfilingSample(cmd, "Filter Cubemap Mip {0}", mip))
+                using (new ProfilingScope(cmd, "Filter Cubemap Mip {0}", mip))
                 {
                     for (int face = 0; face < 6; ++face)
                     {
@@ -151,7 +151,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             int numRows = conditionalCdf.height;
 
-            using (new ProfilingSample(cmd, "Build Probability Tables"))
+            using (new ProfilingScope(cmd, "Build Probability Tables"))
             {
                 cmd.DispatchCompute(m_BuildProbabilityTablesCS, m_ConditionalDensitiesKernel, numRows, 1, 1);
                 cmd.DispatchCompute(m_BuildProbabilityTablesCS, m_MarginalRowDensitiesKernel, 1, 1, 1);

@@ -1963,7 +1963,7 @@ namespace UnityEngine.Rendering.HighDefinition
             var debugLightFilter = debugDisplaySettings.GetDebugLightFilterMode();
             var hasDebugLightFilter = debugLightFilter != DebugLightFilterMode.None;
 
-            using (new ProfilingSample(cmd, "Prepare Lights For GPU"))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.PrepareLightsForGPU, ProfilingType.Cpu)))
             {
                 Camera camera = hdCamera.camera;
 
@@ -2038,7 +2038,7 @@ namespace UnityEngine.Rendering.HighDefinition
                         additionalData.EvaluateShadowState(hdCamera, cullResults, hdCamera.frameSettings, lightIndex);
 
                         // Reserve shadow map resolutions and check if light needs to render shadows
-                        if(additionalData.WillRenderShadowMap())
+                        if (additionalData.WillRenderShadowMap())
                         {
                             additionalData.ReserveShadowMap(camera, m_ShadowManager, m_ShadowInitParameters, light.screenRect);
                         }
@@ -2047,7 +2047,7 @@ namespace UnityEngine.Rendering.HighDefinition
                         LightCategory lightCategory = LightCategory.Count;
                         GPULightType gpuLightType = GPULightType.Point;
                         LightVolumeType lightVolumeType = LightVolumeType.Count;
-                        HDRenderPipeline.EvaluateGPULightType(lightType, additionalData.spotLightShape, additionalData.areaLightShape, 
+                        HDRenderPipeline.EvaluateGPULightType(lightType, additionalData.spotLightShape, additionalData.areaLightShape,
                                                                 ref lightCategory, ref gpuLightType, ref lightVolumeType);
 
                         if (hasDebugLightFilter
@@ -2093,7 +2093,7 @@ namespace UnityEngine.Rendering.HighDefinition
                         var light = cullResults.visibleLights[lightIndex];
                         var lightComponent = light.light;
 
-                        switch(lightCategory)
+                        switch (lightCategory)
                         {
                             case LightCategory.Punctual:
                                 if (punctualLightcount >= m_MaxPunctualLightsOnScreen)
@@ -2209,10 +2209,10 @@ namespace UnityEngine.Rendering.HighDefinition
                     UpdateSortKeysArray(probeCount);
                     sortCount = 0;
 
-                    var enableReflectionProbes =    hdCamera.frameSettings.IsEnabled(FrameSettingsField.ReflectionProbe) &&
+                    var enableReflectionProbes = hdCamera.frameSettings.IsEnabled(FrameSettingsField.ReflectionProbe) &&
                                                     (!hasDebugLightFilter || debugLightFilter.IsEnabledFor(ProbeSettings.ProbeType.ReflectionProbe));
 
-                    var enablePlanarProbes =    hdCamera.frameSettings.IsEnabled(FrameSettingsField.PlanarProbe) &&
+                    var enablePlanarProbes = hdCamera.frameSettings.IsEnabled(FrameSettingsField.PlanarProbe) &&
                                                 (!hasDebugLightFilter || debugLightFilter.IsEnabledFor(ProbeSettings.ProbeType.PlanarProbe));
 
                     for (int probeIndex = 0, numProbes = totalProbes; (probeIndex < numProbes) && (sortCount < probeCount); probeIndex++)
@@ -2857,7 +2857,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         void BuildGPULightListsCommon(HDCamera hdCamera, CommandBuffer cmd)
         {
-            using (new ProfilingSample(cmd, "Build Light List"))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.BuildLightList, ProfilingType.Gpu)))
             {
                 var parameters = PrepareBuildGPULightListParameters(hdCamera);
                 var resources = PrepareBuildGPULightListResources(
@@ -2944,7 +2944,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         static void PushLightLoopGlobalParams(in LightLoopGlobalParameters param, CommandBuffer cmd)
         {
-            using (new ProfilingSample(cmd, "Push Global Parameters", CustomSamplerId.TPPushGlobalParameters.GetSampler()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.TilePassPushGlobalParameters, ProfilingType.AllCpu)))
             {
                 Camera camera = param.hdCamera.camera;
 
@@ -3163,7 +3163,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (!WillRenderContactShadow())
                 return;
 
-            using (new ProfilingSample(cmd, "Contact Shadows", CustomSamplerId.TPScreenSpaceShadows.GetSampler()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.ContactShadows, ProfilingType.Gpu)))
             {
                 m_ShadowManager.BindResources(cmd);
 
@@ -3278,7 +3278,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         static void RenderComputeDeferredLighting(in DeferredLightingParameters parameters, in DeferredLightingResources resources, CommandBuffer cmd)
         {
-            using (new ProfilingSample(cmd, "TilePass - Compute Deferred Lighting Pass", CustomSamplerId.TPRenderDeferredLighting.GetSampler()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderDeferredLighting, ProfilingType.Gpu, "TilePass - Compute Deferred Lighting Pass")))
             {
                 cmd.SetGlobalBuffer(HDShaderIDs.g_vLightListGlobal, resources.lightListBuffer);
 
@@ -3363,7 +3363,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         static void RenderComputeAsPixelDeferredLighting(in DeferredLightingParameters parameters, in DeferredLightingResources resources, CommandBuffer cmd)
         {
-            using (new ProfilingSample(cmd, "TilePass - Compute as Pixel Deferred Lighting Pass", CustomSamplerId.TPRenderDeferredLighting.GetSampler()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderDeferredLightingComputeAsPixel, ProfilingType.Gpu, "TilePass - Compute as Pixel Deferred Lighting Pass")))
             {
                 cmd.SetGlobalBuffer(HDShaderIDs.g_vLightListGlobal, resources.lightListBuffer);
 
@@ -3392,13 +3392,13 @@ namespace UnityEngine.Rendering.HighDefinition
             // First, render split lighting.
             if (parameters.outputSplitLighting)
             {
-                using (new ProfilingSample(cmd, "SinglePass - Deferred Lighting Pass MRT", CustomSamplerId.TPRenderDeferredLighting.GetSampler()))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderDeferredLightingSinglePassMRT, ProfilingType.Gpu, "SinglePass - Deferred Lighting Pass MRT")))
                 {
                     CoreUtils.DrawFullScreen(cmd, parameters.splitLightingMat, resources.colorBuffers, resources.depthStencilBuffer);
                 }
             }
 
-            using (new ProfilingSample(cmd, "SinglePass - Deferred Lighting Pass", CustomSamplerId.TPRenderDeferredLighting.GetSampler()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderDeferredLightingSinglePass, ProfilingType.Gpu, "SinglePass - Deferred Lighting Pass")))
             {
                 var currentLightingMaterial = parameters.regularLightingMat;
                 // If SSS is disable, do lighting for both split lighting and no split lighting
@@ -3464,14 +3464,14 @@ namespace UnityEngine.Rendering.HighDefinition
             if (GetFeatureVariantsEnabled(hdCamera.frameSettings) || hdCamera.frameSettings.IsEnabled(FrameSettingsField.SSR))
             {
                 // For material classification we use compute shader and so can't read into the stencil, so prepare it.
-                using (new ProfilingSample(cmd, "Clear and copy stencil texture for material classification", CustomSamplerId.ClearAndCopyStencilTexture.GetSampler()))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.ClearAndCopyStencilTexture, ProfilingType.Gpu)))
                 {
                     CopyStencilBufferForMaterialClassification(cmd, depthStencilBuffer, stencilBufferCopy, copyStencil);
                 }
 
                 if (hdCamera.frameSettings.IsEnabled(FrameSettingsField.SSR))
                 {
-                    using (new ProfilingSample(cmd, "Update stencil copy for SSR Exclusion", CustomSamplerId.UpdateStencilCopyForSSRExclusion.GetSampler()))
+                    using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.UpdateStencilCopyForSSRExclusion, ProfilingType.Gpu)))
                     {
                         UpdateStencilBufferForSSRExclusion(cmd, depthStencilBuffer, stencilBufferCopy, copyStencilForSSR);
                     }
@@ -3508,7 +3508,7 @@ namespace UnityEngine.Rendering.HighDefinition
             LightingDebugSettings lightingDebug = debugParameters.debugDisplaySettings.data.lightingDebugSettings;
             if (lightingDebug.tileClusterDebug != TileClusterDebug.None)
             {
-                using (new ProfilingSample(cmd, "Tiled/cluster Lighting Debug", CustomSamplerId.TPTiledLightingDebug.GetSampler()))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.TiledLightingDebug, ProfilingType.Gpu, "Tiled/cluster Lighting Debug")))
                 {
                     var hdCamera = debugParameters.hdCamera;
                     var parameters = debugParameters.lightingOverlayParameters;
@@ -3568,7 +3568,7 @@ namespace UnityEngine.Rendering.HighDefinition
             LightingDebugSettings lightingDebug = debugParameters.debugDisplaySettings.data.lightingDebugSettings;
             if (lightingDebug.shadowDebugMode != ShadowMapDebugMode.None)
             {
-                using (new ProfilingSample(cmd, "Display Shadows", CustomSamplerId.TPDisplayShadows.GetSampler()))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.DisplayShadows, ProfilingType.Gpu)))
                 {
                     var hdCamera = debugParameters.hdCamera;
                     var parameters = debugParameters.lightingOverlayParameters;

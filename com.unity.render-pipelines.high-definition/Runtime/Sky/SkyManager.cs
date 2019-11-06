@@ -461,7 +461,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         void RenderCubemapGGXConvolution(SkyUpdateContext skyContext)
         {
-            using (new ProfilingSample(m_BuiltinParameters.commandBuffer, "Update Env: GGX Convolution"))
+            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, "Update Env: GGX Convolution"))
             {
                 var renderingContext = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderingContext;
                 var renderer = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderer;
@@ -671,9 +671,9 @@ namespace UnityEngine.Rendering.HighDefinition
                     (skyContext.skySettings.updateMode.value == EnvironmentUpdateMode.OnChanged && skyHash != skyContext.skyParametersHash) ||
                     (skyContext.skySettings.updateMode.value == EnvironmentUpdateMode.Realtime && skyContext.currentUpdateTime > skyContext.skySettings.updatePeriod.value))
                 {
-                    using (new ProfilingSample(cmd, "Sky Environment Pass"))
+                    using (new ProfilingScope(cmd, "Sky Environment Pass"))
                     {
-                        using (new ProfilingSample(cmd, "Update Env: Generate Lighting Cubemap"))
+                        using (new ProfilingScope(cmd, "Update Env: Generate Lighting Cubemap"))
                         {
                             // In case the hash has changed and update mode is "On Changed" we need to acquire a new context.
                             AcquireSkyRenderingContext(skyContext, skyHash);
@@ -682,7 +682,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
                             if (updateAmbientProbe)
                             {
-                                using (new ProfilingSample(cmd, "Update Ambient Probe"))
+                                using (new ProfilingScope(cmd, "Update Ambient Probe"))
                                 {
                                     cmd.SetComputeBufferParam(m_ComputeAmbientProbeCS, m_ComputeAmbientProbeKernel, m_AmbientProbeOutputBufferParam, renderingContext.ambientProbeResult);
                                     cmd.SetComputeTextureParam(m_ComputeAmbientProbeCS, m_ComputeAmbientProbeKernel, m_AmbientProbeInputCubemap, renderingContext.skyboxCubemapRT);
@@ -694,7 +694,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
                         if (renderingContext.supportsConvolution)
                         {
-                            using (new ProfilingSample(cmd, "Update Env: Convolve Lighting Cubemap"))
+                            using (new ProfilingScope(cmd, "Update Env: Convolve Lighting Cubemap"))
                             {
                                 RenderCubemapGGXConvolution(skyContext);
                             }
@@ -763,7 +763,7 @@ namespace UnityEngine.Rendering.HighDefinition
             var skyContext = hdCamera.visualSky;
             if (skyContext.IsValid() && hdCamera.clearColorMode == HDAdditionalCameraData.ClearColorMode.Sky)
             {
-                using (new ProfilingSample(cmd, "Sky Pass"))
+                using (new ProfilingScope(cmd, "Sky Pass"))
                 {
                     m_BuiltinParameters.hdCamera = hdCamera;
                     m_BuiltinParameters.commandBuffer = cmd;
@@ -810,7 +810,7 @@ namespace UnityEngine.Rendering.HighDefinition
                                                       RTHandle depthBuffer,
                                                       Matrix4x4 pixelCoordToViewDirWS, bool isMSAA)
         {
-            using (new ProfilingSample(cmd, "Opaque Atmospheric Scattering"))
+            using (new ProfilingScope(cmd, "Opaque Atmospheric Scattering"))
             {
                 m_OpaqueAtmScatteringBlock.SetMatrix(HDShaderIDs._PixelCoordToViewDirWS, pixelCoordToViewDirWS);
                 if (isMSAA)

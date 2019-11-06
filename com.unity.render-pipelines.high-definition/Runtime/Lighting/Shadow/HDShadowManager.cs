@@ -642,17 +642,17 @@ namespace UnityEngine.Rendering.HighDefinition
                 return ;
 
             // Clear atlas render targets and draw shadows
-            using (new ProfilingSample(cmd, "Punctual Lights Shadows rendering", CustomSamplerId.RenderShadowMaps.GetSampler()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderShadowMaps, ProfilingType.Gpu, "Punctual Lights Shadows rendering")))
             {
                 m_Atlas.RenderShadows(cullResults, hdCamera.frameSettings, renderContext, cmd);
             }
 
-            using (new ProfilingSample(cmd, "Directional Light Shadows rendering", CustomSamplerId.RenderShadowMaps.GetSampler()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderShadowMaps, ProfilingType.Gpu, "Directional Light Shadows rendering")))
             {
                 m_CascadeAtlas.RenderShadows(cullResults, hdCamera.frameSettings, renderContext, cmd);
             }
 
-            using (new ProfilingSample(cmd, "Area Light Shadows rendering", CustomSamplerId.RenderShadowMaps.GetSampler()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderShadowMaps, ProfilingType.Gpu, "Area Light Shadows rendering")))
             {
                 if (ShaderConfig.s_AreaLights == 1)
                     m_AreaLightShadowAtlas.RenderShadows(cullResults, hdCamera.frameSettings, renderContext, cmd);

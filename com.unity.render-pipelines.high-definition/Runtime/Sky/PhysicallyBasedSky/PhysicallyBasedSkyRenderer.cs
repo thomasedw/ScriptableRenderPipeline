@@ -173,7 +173,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         void PrecomputeTables(CommandBuffer cmd)
         {
-            using (new ProfilingSample(cmd, "In-Scattered Radiance Precomputation"))
+            using (new ProfilingScope(cmd, "In-Scattered Radiance Precomputation"))
             {
                 int order = m_LastPrecomputedBounce + 1;
                 {

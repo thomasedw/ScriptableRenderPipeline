@@ -285,7 +285,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (display == null || !display.running)
                 return;
 
-            using (new ProfilingSample(cmd, "XR Mirror View"))
+            using (new ProfilingScope(cmd, "XR Mirror View"))
             {
                 cmd.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
               

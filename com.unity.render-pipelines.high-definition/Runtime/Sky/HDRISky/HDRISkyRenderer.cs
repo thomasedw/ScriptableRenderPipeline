@@ -31,7 +31,7 @@ namespace UnityEngine.Rendering.HighDefinition
             m_SkyHDRIMaterial.SetTexture(HDShaderIDs._Cubemap, hdriSky.hdriSky.value);
             m_SkyHDRIMaterial.SetVector(HDShaderIDs._SkyParam, new Vector4(exposure, multiplier, Mathf.Cos(phi), Mathf.Sin(phi)));
 
-            using (new ProfilingSample(builtinParams.commandBuffer, "Draw sky"))
+            using (new ProfilingScope(builtinParams.commandBuffer, "Draw sky"))
             {
                 // This matrix needs to be updated at the draw call frequency.
                 m_PropertyBlock.SetMatrix(HDShaderIDs._PixelCoordToViewDirWS, builtinParams.pixelCoordToViewDirMatrix);
