@@ -180,7 +180,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             bool msaa = hdCamera.frameSettings.IsEnabled(FrameSettingsField.MSAA);
 
-            using (var builder = renderGraph.AddRenderPass<DepthPrepassData>(depthPrepassParameters.passName, out var passData, depthPrepassParameters.profilingId.Get(depthPrepassParameters.passName)))
+            using (var builder = renderGraph.AddRenderPass<DepthPrepassData>(depthPrepassParameters.passName, out var passData, depthPrepassParameters.profilingId.Get()))
             {
                 passData.frameSettings = hdCamera.frameSettings;
                 passData.msaaEnabled = msaa;

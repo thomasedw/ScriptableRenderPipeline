@@ -11,19 +11,44 @@ namespace UnityEngine.Rendering
         {
             sampler = CustomSampler.Create(name, true); // Event markers, command buffer CPU profiling and GPU profiling
             inlineSampler = CustomSampler.Create(name); // Profiles code "immediately"
+
+            m_Recorder = sampler.GetRecorder();
+            m_Recorder.enabled = false;
+            m_InlineRecorder = inlineSampler.GetRecorder();
+            m_InlineRecorder.enabled = false;
         }
 
         public bool IsValid() { return (sampler != null && inlineSampler != null); }
 
-        public CustomSampler sampler;
-        public CustomSampler inlineSampler;
+        internal CustomSampler sampler { get; private set; }
+        internal CustomSampler inlineSampler { get; private set; }
+
+        Recorder m_Recorder;
+        Recorder m_InlineRecorder;
+
+        public bool enableRecording
+        {
+            set
+            {
+                m_Recorder.enabled = value; ;
+                m_InlineRecorder.enabled = value; ;
+            }
+        }
+
+        public string name => sampler.name;
+        public float gpuElapsedTime => m_Recorder.enabled ? m_Recorder.gpuElapsedNanoseconds / 1000000.0f : 0.0f;
+        public int gpuSampleCount => m_Recorder.enabled ? m_Recorder.gpuSampleBlockCount : 0;
+        public float cpuElapsedTime => m_Recorder.enabled ? m_Recorder.elapsedNanoseconds / 1000000.0f : 0.0f;
+        public int cpuSampleCount => m_Recorder.enabled ? m_Recorder.sampleBlockCount : 0;
+        public float inlineCpuElapsedTime => m_InlineRecorder.enabled ? m_InlineRecorder.elapsedNanoseconds / 1000000.0f : 0.0f;
+        public int inlineCpuSampleCount => m_InlineRecorder.enabled ? m_InlineRecorder.sampleBlockCount : 0;
     }
 
     public class ProfileSamplerList<ProfilingSamplerId> where ProfilingSamplerId : Enum
     {
         static ProfilingSampler[] s_Samplers = null;
 
-        static public ProfilingSampler Get(ProfilingSamplerId samplerId, string nameOverride = "")
+        static public ProfilingSampler Get(ProfilingSamplerId samplerId)
         {
             if (s_Samplers == null)
             {
@@ -39,14 +64,9 @@ namespace UnityEngine.Rendering
             var sampler = s_Samplers[index];
             if (sampler == null || !sampler.IsValid())
             {
-                s_Samplers[index] = new ProfilingSampler(nameOverride == "" ? samplerId.ToString() : nameOverride);
+                s_Samplers[index] = new ProfilingSampler(samplerId.ToString());
             }
-#if UNITY_EDITOR
-            if (nameOverride != "" && s_Samplers[index].sampler.name != nameOverride)
-            {
-                Debug.LogError(string.Format("Tried to use the same sampler id {0} with a different name override {1}. This is not supported", samplerId, nameOverride));
-            }
-#endif
+
             return s_Samplers[index];
         }
     }

@@ -3278,7 +3278,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         static void RenderComputeDeferredLighting(in DeferredLightingParameters parameters, in DeferredLightingResources resources, CommandBuffer cmd)
         {
-            using (new ProfilingScope(cmd, HDProfileId.RenderDeferredLighting.Get("TilePass - Compute Deferred Lighting Pass")))
+            using (new ProfilingScope(cmd, HDProfileId.RenderDeferredLightingCompute.Get()))
             {
                 cmd.SetGlobalBuffer(HDShaderIDs.g_vLightListGlobal, resources.lightListBuffer);
 
@@ -3363,7 +3363,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         static void RenderComputeAsPixelDeferredLighting(in DeferredLightingParameters parameters, in DeferredLightingResources resources, CommandBuffer cmd)
         {
-            using (new ProfilingScope(cmd, HDProfileId.RenderDeferredLightingComputeAsPixel.Get("TilePass - Compute as Pixel Deferred Lighting Pass")))
+            using (new ProfilingScope(cmd, HDProfileId.RenderDeferredLightingComputeAsPixel.Get()))
             {
                 cmd.SetGlobalBuffer(HDShaderIDs.g_vLightListGlobal, resources.lightListBuffer);
 
@@ -3392,13 +3392,13 @@ namespace UnityEngine.Rendering.HighDefinition
             // First, render split lighting.
             if (parameters.outputSplitLighting)
             {
-                using (new ProfilingScope(cmd, HDProfileId.RenderDeferredLightingSinglePassMRT.Get("SinglePass - Deferred Lighting Pass MRT")))
+                using (new ProfilingScope(cmd, HDProfileId.RenderDeferredLightingSinglePassMRT.Get()))
                 {
                     CoreUtils.DrawFullScreen(cmd, parameters.splitLightingMat, resources.colorBuffers, resources.depthStencilBuffer);
                 }
             }
 
-            using (new ProfilingScope(cmd, HDProfileId.RenderDeferredLightingSinglePass.Get("SinglePass - Deferred Lighting Pass")))
+            using (new ProfilingScope(cmd, HDProfileId.RenderDeferredLightingSinglePass.Get()))
             {
                 var currentLightingMaterial = parameters.regularLightingMat;
                 // If SSS is disable, do lighting for both split lighting and no split lighting
@@ -3508,7 +3508,7 @@ namespace UnityEngine.Rendering.HighDefinition
             LightingDebugSettings lightingDebug = debugParameters.debugDisplaySettings.data.lightingDebugSettings;
             if (lightingDebug.tileClusterDebug != TileClusterDebug.None)
             {
-                using (new ProfilingScope(cmd, HDProfileId.TiledLightingDebug.Get("Tiled/cluster Lighting Debug")))
+                using (new ProfilingScope(cmd, HDProfileId.TileClusterLightingDebug.Get()))
                 {
                     var hdCamera = debugParameters.hdCamera;
                     var parameters = debugParameters.lightingOverlayParameters;

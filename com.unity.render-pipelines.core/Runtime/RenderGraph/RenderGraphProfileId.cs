@@ -10,9 +10,9 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
 
     internal static class HDCustomSamplerExtension
     {
-        public static ProfilingSampler Get(this RenderGraphProfileId samplerId, string nameOverride = "")
+        public static ProfilingSampler Get(this RenderGraphProfileId samplerId)
         {
-            return ProfileSamplerList<RenderGraphProfileId>.Get(samplerId, nameOverride);
+            return ProfileSamplerList<RenderGraphProfileId>.Get(samplerId);
         }
     }
 }

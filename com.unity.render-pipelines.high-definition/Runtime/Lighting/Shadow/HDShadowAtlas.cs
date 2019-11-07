@@ -560,7 +560,7 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             ComputeShader shadowBlurMomentsCS = parameters.evsmShadowBlurMomentsCS;
 
-            using (new ProfilingScope(cmd, HDProfileId.RenderEVSMShadowMaps.Get("Render & Blur Moment Shadows")))
+            using (new ProfilingScope(cmd, HDProfileId.RenderEVSMShadowMaps.Get()))
             {
                 int generateAndBlurMomentsKernel = shadowBlurMomentsCS.FindKernel("ConvertAndBlur");
                 int blurMomentsKernel = shadowBlurMomentsCS.FindKernel("Blur");
@@ -585,7 +585,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 int requestIdx = 0;
                 foreach (var shadowRequest in parameters.shadowRequests)
                 {
-                    using (new ProfilingScope(cmd, HDProfileId.RenderEVSMShadowMapsBlur.Get("EVSM conversion and blur")))
+                    using (new ProfilingScope(cmd, HDProfileId.RenderEVSMShadowMapsBlur.Get()))
                     {
                         int downsampledWidth = Mathf.CeilToInt(shadowRequest.atlasViewport.width * 0.5f);
                         int downsampledHeight = Mathf.CeilToInt(shadowRequest.atlasViewport.height * 0.5f);
@@ -626,7 +626,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 {
                     if (finalAtlasTexture[i] != 0)
                     {
-                        using (new ProfilingScope(cmd, HDProfileId.RenderEVSMShadowMapsCopyToAtlas.Get("Copy into main atlas")))
+                        using (new ProfilingScope(cmd, HDProfileId.RenderEVSMShadowMapsCopyToAtlas.Get()))
                         {
                             var shadowRequest = parameters.shadowRequests[i];
                             int downsampledWidth = Mathf.CeilToInt(shadowRequest.atlasViewport.width * 0.5f);

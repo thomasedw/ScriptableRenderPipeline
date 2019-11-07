@@ -1658,7 +1658,7 @@ namespace UnityEngine.Rendering.HighDefinition
                         // var aovRequestIndex = 0;
                         foreach (var aovRequest in renderRequest.hdCamera.aovRequests)
                         {
-                        using (new ProfilingScope(cmd, HDProfileId.HDRenderPipelineRenderAOV.Get("HDRenderPipeline::Render AOV Request")))
+                        using (new ProfilingScope(cmd, HDProfileId.HDRenderPipelineRenderAOV.Get()))
                             {
                                 cmd.SetInvertCulling(renderRequest.cameraSettings.invertFaceCulling);
                                 ExecuteRenderRequest(renderRequest, renderContext, cmd, aovRequest);
@@ -1670,7 +1670,7 @@ namespace UnityEngine.Rendering.HighDefinition
                             cmd = CommandBufferPool.Get();
                         }
 
-                        using (new ProfilingScope(cmd, HDProfileId.HDRenderPipelineRenderCamera.Get("HDRenderPipeline::Render Camera")))
+                        using (new ProfilingScope(cmd, HDProfileId.HDRenderPipelineRenderCamera.Get()))
                         {
                             cmd.SetInvertCulling(renderRequest.cameraSettings.invertFaceCulling);
                             UnityEngine.Rendering.RenderPipeline.BeginCameraRendering(renderContext, renderRequest.hdCamera.camera);
@@ -2819,7 +2819,7 @@ namespace UnityEngine.Rendering.HighDefinition
             var rayTracingOpaqueRendererList = RendererList.Create(depthPrepassParameters.rayTracingOpaqueRLDesc);
             var rayTracingTransparentRendererList = RendererList.Create(depthPrepassParameters.rayTracingTransparentRLDesc);
 
-            using (new ProfilingScope(cmd, depthPrepassParameters.profilingId.Get(depthPrepassParameters.passName)))
+            using (new ProfilingScope(cmd, depthPrepassParameters.profilingId.Get()))
             {
                 RenderDepthPrepass( renderContext, cmd, hdCamera.frameSettings,
                                     m_SharedRTManager.GetPrepassBuffersRTI(hdCamera.frameSettings),

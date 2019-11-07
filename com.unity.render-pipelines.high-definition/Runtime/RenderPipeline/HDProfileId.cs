@@ -111,10 +111,10 @@ namespace UnityEngine.Rendering.HighDefinition
         // Profile sampler for tile pass
         PrepareLightsForGPU,
         LightLoopPushGlobalParameters,
-        TiledLightingDebug,
+        TileClusterLightingDebug,
         DisplayShadows,
 
-        RenderDeferredLighting,
+        RenderDeferredLightingCompute,
         RenderDeferredLightingComputeAsPixel,
         RenderDeferredLightingSinglePass,
         RenderDeferredLightingSinglePassMRT,
@@ -166,9 +166,9 @@ namespace UnityEngine.Rendering.HighDefinition
 
     internal static class HDCustomSamplerExtension
     {
-        public static ProfilingSampler Get(this HDProfileId samplerId, string nameOverride = "")
+        public static ProfilingSampler Get(this HDProfileId samplerId)
         {
-            return ProfileSamplerList<HDProfileId>.Get(samplerId, nameOverride);
+            return ProfileSamplerList<HDProfileId>.Get(samplerId);
         }
     }
 }
