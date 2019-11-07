@@ -1,3 +1,4 @@
+using UnityEngine.Rendering;
 
 namespace UnityEngine.Experimental.Rendering.RenderGraphModule
 {
@@ -5,5 +6,13 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
     {
         RenderGraphClear,
         RenderGraphClearDebug,
+    }
+
+    internal static class HDCustomSamplerExtension
+    {
+        public static ProfilingSampler Get(this RenderGraphProfileId samplerId, string nameOverride = "")
+        {
+            return ProfileSamplerList<RenderGraphProfileId>.Get(samplerId, nameOverride);
+        }
     }
 }

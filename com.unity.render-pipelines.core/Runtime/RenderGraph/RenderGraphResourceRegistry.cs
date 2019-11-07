@@ -380,7 +380,7 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
                         //using (new ProfilingScope(rgContext.cmd, string.Format("RenderGraph: Clear Buffer {0}", resourceDescMoved.desc.name)))
                         bool debugClear = m_RenderGraphDebug.clearRenderTargetsAtCreation && !resource.desc.clearBuffer;
                         var name = debugClear ? "RenderGraph: Clear Buffer (Debug)" : "RenderGraph: Clear Buffer";
-                        using (new ProfilingScope(rgContext.cmd, ProfilingSampler.Get(RenderGraphProfileId.RenderGraphClear)))
+                        using (new ProfilingScope(rgContext.cmd, RenderGraphProfileId.RenderGraphClear.Get()))
                         {
                             var clearFlag = resource.desc.depthBufferBits != DepthBits.None ? ClearFlag.Depth : ClearFlag.Color;
                             var clearColor = debugClear ? Color.magenta : resource.desc.clearColor;
@@ -473,7 +473,7 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
                 {
                     if (m_RenderGraphDebug.clearRenderTargetsAtRelease)
                     {
-                        using (new ProfilingScope(rgContext.cmd, ProfilingSampler.Get(RenderGraphProfileId.RenderGraphClearDebug)))
+                        using (new ProfilingScope(rgContext.cmd, RenderGraphProfileId.RenderGraphClearDebug.Get()))
                         {
                             var clearFlag = resourceDesc.desc.depthBufferBits != DepthBits.None ? ClearFlag.Depth : ClearFlag.Color;
                             CoreUtils.SetRenderTarget(rgContext.cmd, GetTexture(resource), clearFlag, Color.magenta);

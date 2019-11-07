@@ -10,18 +10,21 @@ namespace UnityEngine.Rendering
         public ProfilingSampler(string name)
         {
             sampler = CustomSampler.Create(name, true);
-            inlineSampler = CustomSampler.Create(string.Format("INL_{0}", name));
+            inlineSampler = CustomSampler.Create(name);
         }
 
         public bool IsValid() { return (sampler != null && inlineSampler != null); }
 
         public CustomSampler sampler;
         public CustomSampler inlineSampler;
+    }
 
-        public static ProfilingSampler Get<ProfilingSamplerId>(ProfilingSamplerId samplerId, string nameOverride = "") where ProfilingSamplerId : Enum
+    public class ProfileSamplerList<ProfilingSamplerId> where ProfilingSamplerId : Enum
+    {
+        static ProfilingSampler[] s_Samplers = null;
+
+        static public ProfilingSampler Get(ProfilingSamplerId samplerId, string nameOverride = "")
         {
-            ProfilingSampler[] s_Samplers = null;
-
             if (s_Samplers == null)
             {
                 int max = 0;
@@ -44,13 +47,8 @@ namespace UnityEngine.Rendering
                 Debug.LogError(string.Format("Tried to use the same sampler id {0} with a different name override {1}. This is not supported", samplerId, nameOverride));
             }
 #endif
-            return s_Samplers[(int)(object)samplerId];
+            return s_Samplers[index];
         }
-    }
-
-    class ProfileSamplers<EnumType>
-    {
-
     }
 
     public struct ProfilingScope : IDisposable
@@ -60,7 +58,7 @@ namespace UnityEngine.Rendering
         CustomSampler   m_Sampler;
         CustomSampler   m_InlineSampler;
 
-        public ProfilingScope(CommandBuffer cmd, ProfilingSampler sampler)
+        public ProfilingScope(CommandBuffer cmd, in ProfilingSampler sampler)
         {
             m_Cmd = cmd;
             m_Disposed = false;

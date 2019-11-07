@@ -1,3 +1,5 @@
+using UnityEngine.Rendering;
+
 namespace UnityEngine.Rendering.HighDefinition
 {
     internal enum HDProfileId
@@ -162,4 +164,11 @@ namespace UnityEngine.Rendering.HighDefinition
         CustomPostProcessBeforeTransparent,
     }
 
+    internal static class HDCustomSamplerExtension
+    {
+        public static ProfilingSampler Get(this HDProfileId samplerId, string nameOverride = "")
+        {
+            return ProfileSamplerList<HDProfileId>.Get(samplerId, nameOverride);
+        }
+    }
 }
