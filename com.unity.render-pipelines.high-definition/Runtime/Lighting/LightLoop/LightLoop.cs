@@ -2944,7 +2944,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         static void PushLightLoopGlobalParams(in LightLoopGlobalParameters param, CommandBuffer cmd)
         {
-            using (new ProfilingScope(cmd, HDProfileId.TilePassPushGlobalParameters.Get()))
+            using (new ProfilingScope(cmd, HDProfileId.LightLoopPushGlobalParameters.Get()))
             {
                 Camera camera = param.hdCamera.camera;
 

@@ -5,11 +5,9 @@ namespace UnityEngine.Rendering.HighDefinition
     internal enum HDProfileId
     {
         PushGlobalParameters,
-        CopySetDepthBuffer,
         CopyDepthBuffer,
         CopyDepthInTargetTexture,
         HTileForSSS,
-        Forward,
         RenderSSAO,
         HorizonSSAO,
         DenoiseSSAO,
@@ -41,7 +39,6 @@ namespace UnityEngine.Rendering.HighDefinition
         DisplayDebugDecalsAtlas,
         DisplayDebugViewMaterial,
         DebugViewMaterialGBuffer,
-        BlitDebugViewMaterialDebug,
         SubsurfaceScattering,
         SsrTracing,
         SsrReprojection,
@@ -68,14 +65,12 @@ namespace UnityEngine.Rendering.HighDefinition
         ClearSssLightingBuffer,
         ClearSSSFilteringTarget,
         ClearAndCopyStencilTexture,
-        ClearHTile,
         ClearHDRTarget,
         ClearGBuffer,
         ClearSsrBuffers,
         HDRenderPipelineRenderCamera,
         HDRenderPipelineRenderAOV,
         CullResultsCull,
-        CopyDepth,
         UpdateStencilCopyForSSRExclusion,
         GizmosPrePostprocess,
         Gizmos,
@@ -115,10 +110,8 @@ namespace UnityEngine.Rendering.HighDefinition
 
         // Profile sampler for tile pass
         PrepareLightsForGPU,
-        TilePassPushGlobalParameters,
+        LightLoopPushGlobalParameters,
         TiledLightingDebug,
-        TilePassTileSettingsEnableTileAndCluster,
-        TilePassForwardPass,
         DisplayShadows,
 
         RenderDeferredLighting,
