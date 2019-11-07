@@ -9,8 +9,8 @@ namespace UnityEngine.Rendering
     {
         public ProfilingSampler(string name)
         {
-            sampler = CustomSampler.Create(name, true);
-            inlineSampler = CustomSampler.Create(name);
+            sampler = CustomSampler.Create(name, true); // Event markers, command buffer CPU profiling and GPU profiling
+            inlineSampler = CustomSampler.Create(name); // Profiles code "immediately"
         }
 
         public bool IsValid() { return (sampler != null && inlineSampler != null); }

@@ -440,7 +440,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         void RenderSkyToCubemap(SkyUpdateContext skyContext)
         {
-            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, ProfilingSampler.Get(HDProfileId.RenderSkyToCubemap)))
+            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, HDProfileId.RenderSkyToCubemap.Get()))
             {
                 var renderingContext = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderingContext;
                 var renderer = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderer;
@@ -464,7 +464,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         void RenderCubemapGGXConvolution(SkyUpdateContext skyContext)
         {
-            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, ProfilingSampler.Get(HDProfileId.UpdateSkyEnvironmentConvolution)))
+            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, HDProfileId.UpdateSkyEnvironmentConvolution.Get()))
             {
                 var renderingContext = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderingContext;
                 var renderer = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderer;
@@ -674,7 +674,7 @@ namespace UnityEngine.Rendering.HighDefinition
                     (skyContext.skySettings.updateMode.value == EnvironmentUpdateMode.OnChanged && skyHash != skyContext.skyParametersHash) ||
                     (skyContext.skySettings.updateMode.value == EnvironmentUpdateMode.Realtime && skyContext.currentUpdateTime > skyContext.skySettings.updatePeriod.value))
                 {
-                    using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.UpdateSkyEnvironment)))
+                    using (new ProfilingScope(cmd, HDProfileId.UpdateSkyEnvironment.Get()))
                     {
                         // In case the hash has changed and update mode is "On Changed" we need to acquire a new context.
                         AcquireSkyRenderingContext(skyContext, skyHash);
@@ -682,7 +682,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
                         if (updateAmbientProbe)
                         {
-                            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.UpdateSkyAmbientProbe)))
+                            using (new ProfilingScope(cmd, HDProfileId.UpdateSkyAmbientProbe.Get()))
                             {
                                 cmd.SetComputeBufferParam(m_ComputeAmbientProbeCS, m_ComputeAmbientProbeKernel, m_AmbientProbeOutputBufferParam, renderingContext.ambientProbeResult);
                                 cmd.SetComputeTextureParam(m_ComputeAmbientProbeCS, m_ComputeAmbientProbeKernel, m_AmbientProbeInputCubemap, renderingContext.skyboxCubemapRT);
@@ -759,7 +759,7 @@ namespace UnityEngine.Rendering.HighDefinition
             var skyContext = hdCamera.visualSky;
             if (skyContext.IsValid() && hdCamera.clearColorMode == HDAdditionalCameraData.ClearColorMode.Sky)
             {
-                using (new ProfilingScope(m_BuiltinParameters.commandBuffer, ProfilingSampler.Get(HDProfileId.RenderSky)))
+                using (new ProfilingScope(m_BuiltinParameters.commandBuffer, HDProfileId.RenderSky.Get()))
                 {
                     m_BuiltinParameters.hdCamera = hdCamera;
                     m_BuiltinParameters.commandBuffer = cmd;
@@ -806,7 +806,7 @@ namespace UnityEngine.Rendering.HighDefinition
                                                       RTHandle depthBuffer,
                                                       Matrix4x4 pixelCoordToViewDirWS, bool isMSAA)
         {
-            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, ProfilingSampler.Get(HDProfileId.OpaqueAtmosphericScattering)))
+            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, HDProfileId.OpaqueAtmosphericScattering.Get()))
             {
                 m_OpaqueAtmScatteringBlock.SetMatrix(HDShaderIDs._PixelCoordToViewDirWS, pixelCoordToViewDirWS);
                 if (isMSAA)

@@ -285,7 +285,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (display == null || !display.running)
                 return;
 
-            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.XRMirrorView)))
+            using (new ProfilingScope(cmd, HDProfileId.XRMirrorView.Get()))
             {
                 cmd.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
 

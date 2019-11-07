@@ -75,7 +75,7 @@ namespace UnityEngine.Rendering.HighDefinition
             var aoSettings = VolumeManager.instance.stack.GetComponent<AmbientOcclusion>();
             RayTracingSettings rayTracingSettings = VolumeManager.instance.stack.GetComponent<RayTracingSettings>();
 
-            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingAmbientOcclusion)))
+            using (new ProfilingScope(cmd, HDProfileId.RaytracingAmbientOcclusion.Get()))
             {
                 // Grab the acceleration structure for the target camera
                 RayTracingAccelerationStructure accelerationStructure = m_RenderPipeline.RequestAccelerationStructure();
@@ -115,7 +115,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 cmd.DispatchRays(aoShader, m_RayGenShaderName, (uint)hdCamera.actualWidth, (uint)hdCamera.actualHeight, (uint)hdCamera.viewCount);
             }
 
-            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingFilterAmbientOcclusion)))
+            using (new ProfilingScope(cmd, HDProfileId.RaytracingFilterAmbientOcclusion.Get()))
             {
                 if(aoSettings.denoise.value)
                 {

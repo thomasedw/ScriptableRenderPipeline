@@ -184,7 +184,7 @@ namespace UnityEngine.Rendering.HighDefinition
             int currentKernel = 0;
             RenderTargetIdentifier clearCoatMaskTexture;
 
-            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingIntegrateReflection)))
+            using (new ProfilingScope(cmd, HDProfileId.RaytracingIntegrateReflection.Get()))
             {
                 if (settings.deferredMode.value)
                 {
@@ -285,7 +285,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 cmd.DispatchCompute(reflectionFilter, currentKernel, numTilesXHR, numTilesYHR, hdCamera.viewCount);
             }
 
-            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingFilterReflection)))
+            using (new ProfilingScope(cmd, HDProfileId.RaytracingFilterReflection.Get()))
             {
                 if (settings.denoise.value)
                 {
@@ -310,7 +310,7 @@ namespace UnityEngine.Rendering.HighDefinition
             LightCluster lightClusterSettings = VolumeManager.instance.stack.GetComponent<LightCluster>();
             RayTracingSettings rtSettings = VolumeManager.instance.stack.GetComponent<RayTracingSettings>();
 
-            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingIntegrateReflection)))
+            using (new ProfilingScope(cmd, HDProfileId.RaytracingIntegrateReflection.Get()))
             {
 
                 // Bind all the required data for ray tracing
@@ -329,7 +329,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 CoreUtils.SetKeyword(cmd, "MULTI_BOUNCE_INDIRECT", false);
             }
 
-            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingFilterReflection)))
+            using (new ProfilingScope(cmd, HDProfileId.RaytracingFilterReflection.Get()))
             {
                 if (settings.denoise.value)
                 {

@@ -141,7 +141,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             if (hdCamera.frameSettings.IsEnabled(FrameSettingsField.RayTracing))
             {
-                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.ScreenSpaceShadows)))
+                using (new ProfilingScope(cmd, HDProfileId.ScreenSpaceShadows.Get()))
                 {
                     // First of all we handle the directional light
                     RenderDirectionalLightScreenSpaceShadow(cmd, hdCamera);
@@ -171,7 +171,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 // If the shadow is flagged as ray traced, we need to evaluate it completely
                 if (m_CurrentSunLightAdditionalLightData.WillRenderRayTracedShadow())
                 {
-                    using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingDirectionalLightShadow)))
+                    using (new ProfilingScope(cmd, HDProfileId.RaytracingDirectionalLightShadow.Get()))
                     {
                         // Texture dimensions
                         int texWidth = hdCamera.actualWidth;
@@ -273,7 +273,7 @@ namespace UnityEngine.Rendering.HighDefinition
         }
         bool RenderLightScreenSpaceShadows(HDCamera hdCamera, CommandBuffer cmd)
         {
-            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingLightShadow)))
+            using (new ProfilingScope(cmd, HDProfileId.RaytracingLightShadow.Get()))
             {
                 // Grab the history buffer
                 RTHandle shadowHistoryArray = hdCamera.GetCurrentFrameRT((int)HDCameraFrameHistoryType.RaytracedShadow)
@@ -290,7 +290,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 // Inject the ray-tracing sampling data
                 m_BlueNoise.BindDitheredRNGData8SPP(cmd);
 
-                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingLightShadow)))
+                using (new ProfilingScope(cmd, HDProfileId.RaytracingLightShadow.Get()))
                 {
                     // Loop through all the potential screen space light shadows
                     for (int lightIdx = 0; lightIdx < m_ScreenSpaceShadowIndex; ++lightIdx)

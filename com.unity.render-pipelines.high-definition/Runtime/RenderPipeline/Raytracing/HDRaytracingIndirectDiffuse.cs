@@ -167,7 +167,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             ComputeShader indirectDiffuseCS = m_Asset.renderPipelineRayTracingResources.indirectDiffuseRaytracingCS;
 
-            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingIntegrateIndirectDiffuse)))
+            using (new ProfilingScope(cmd, HDProfileId.RaytracingIntegrateIndirectDiffuse.Get()))
             {
                 if (settings.deferredMode.value)
                 {
@@ -227,7 +227,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 }
             }
 
-            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingFilterIndirectDiffuse)))
+            using (new ProfilingScope(cmd, HDProfileId.RaytracingFilterIndirectDiffuse.Get()))
             {
                 // Fetch the right filter to use
                 int currentKernel = indirectDiffuseCS.FindKernel(settings.fullResolution.value ? "IndirectDiffuseIntegrationUpscaleFullRes" : "IndirectDiffuseIntegrationUpscaleHalfRes");
@@ -342,7 +342,7 @@ namespace UnityEngine.Rendering.HighDefinition
             CoreUtils.SetKeyword(cmd, "DIFFUSE_LIGHTING_ONLY", false);
             CoreUtils.SetKeyword(cmd, "MULTI_BOUNCE_INDIRECT", false);
 
-            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingFilterIndirectDiffuse)))
+            using (new ProfilingScope(cmd, HDProfileId.RaytracingFilterIndirectDiffuse.Get()))
             {
                 if (giSettings.denoise.value)
                 {

@@ -113,7 +113,7 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             if (m_IsActive)
             {
-                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingDebugOverlay)))
+                using (new ProfilingScope(cmd, HDProfileId.RaytracingDebugOverlay.Get()))
                 {
                     // Get the size of the viewport to process
                     int currentWidth = camera.actualWidth;

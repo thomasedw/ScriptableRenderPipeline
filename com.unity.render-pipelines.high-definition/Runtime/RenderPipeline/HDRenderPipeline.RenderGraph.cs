@@ -240,7 +240,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
                     if (data.copyDepth)
                     {
-                        using (new ProfilingScope(ctx.cmd, ProfilingSampler.Get(HDProfileId.CopyDepthInTargetTexture)))
+                        using (new ProfilingScope(ctx.cmd, HDProfileId.CopyDepthInTargetTexture.Get()))
                         {
                             var mpb = ctx.renderGraphPool.GetTempMaterialPropertyBlock();
                             mpb.SetTexture(HDShaderIDs._InputDepth, ctx.resources.GetTexture(data.depthBuffer));
@@ -302,7 +302,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             using (var builder = renderGraph.AddRenderPass<ForwardPassData>(    debugDisplay ? "Forward Opaque Debug" : "Forward Opaque",
                                                                                 out var passData,
-                                                                                ProfilingSampler.Get(debugDisplay ? HDProfileId.ForwardOpaqueDebug : HDProfileId.ForwardOpaque)))
+                                                                                debugDisplay ? HDProfileId.ForwardOpaqueDebug.Get() : HDProfileId.ForwardOpaque.Get()))
             {
                 PrepareForwardPassData(renderGraph, builder, passData, true, hdCamera.frameSettings, PrepareForwardOpaqueRendererList(cullResults, hdCamera), depthBuffer, shadowResult, dbuffer);
 
@@ -368,7 +368,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 profilingId = preRefractionPass ? HDProfileId.ForwardPreRefraction : HDProfileId.ForwardTransparent;
             }
 
-            using (var builder = renderGraph.AddRenderPass<ForwardPassData>(passName, out var passData, ProfilingSampler.Get(profilingId)))
+            using (var builder = renderGraph.AddRenderPass<ForwardPassData>(passName, out var passData, profilingId.Get()))
             {
                 PrepareForwardPassData(renderGraph, builder, passData, false, hdCamera.frameSettings, PrepareForwardTransparentRendererList(cullResults, hdCamera, preRefractionPass), depthBuffer, shadowResult);
 
@@ -428,7 +428,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (!hdCamera.frameSettings.IsEnabled(FrameSettingsField.TransparentPrepass))
                 return;
 
-            using (var builder = renderGraph.AddRenderPass<ForwardPassData>("Transparent Depth Prepass", out var passData, ProfilingSampler.Get(HDProfileId.TransparentDepthPrepass)))
+            using (var builder = renderGraph.AddRenderPass<ForwardPassData>("Transparent Depth Prepass", out var passData, HDProfileId.TransparentDepthPrepass.Get()))
             {
                 passData.frameSettings = hdCamera.frameSettings;
                 passData.depthBuffer = builder.UseDepthBuffer(depthStencilBuffer, DepthAccess.ReadWrite);
@@ -449,7 +449,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (!hdCamera.frameSettings.IsEnabled(FrameSettingsField.TransparentPostpass))
                 return;
 
-            using (var builder = renderGraph.AddRenderPass<ForwardPassData>("Transparent Depth Postpass", out var passData, ProfilingSampler.Get(HDProfileId.TransparentDepthPostpass)))
+            using (var builder = renderGraph.AddRenderPass<ForwardPassData>("Transparent Depth Postpass", out var passData, HDProfileId.TransparentDepthPostpass.Get()))
             {
                 passData.frameSettings = hdCamera.frameSettings;
                 passData.depthBuffer = builder.UseDepthBuffer(depthStencilBuffer, DepthAccess.ReadWrite);
@@ -474,7 +474,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         RenderGraphMutableResource DownsampleDepthForLowResTransparency(RenderGraph renderGraph, HDCamera hdCamera, RenderGraphResource depthTexture)
         {
-            using (var builder = renderGraph.AddRenderPass<DownsampleDepthForLowResPassData>("Downsample Depth Buffer for Low Res Transparency", out var passData, ProfilingSampler.Get(HDProfileId.DownsampleDepth)))
+            using (var builder = renderGraph.AddRenderPass<DownsampleDepthForLowResPassData>("Downsample Depth Buffer for Low Res Transparency", out var passData, HDProfileId.DownsampleDepth.Get()))
             {
                 // TODO: Add option to switch modes at runtime
                 if (m_Asset.currentPlatformRenderPipelineSettings.lowresTransparentSettings.checkerboardDepthBuffer)
@@ -510,7 +510,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         RenderGraphResource RenderLowResTransparent(RenderGraph renderGraph, HDCamera hdCamera, RenderGraphMutableResource downsampledDepth, CullingResults cullingResults)
         {
-            using (var builder = renderGraph.AddRenderPass<RenderLowResTransparentPassData>("Low Res Transparent", out var passData, ProfilingSampler.Get(HDProfileId.LowResTransparent)))
+            using (var builder = renderGraph.AddRenderPass<RenderLowResTransparentPassData>("Low Res Transparent", out var passData, HDProfileId.LowResTransparent.Get()))
             {
                 var passNames = m_Asset.currentPlatformRenderPipelineSettings.supportTransparentBackface ? m_AllTransparentPassNames : m_TransparentNoBackfaceNames;
 
@@ -548,7 +548,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         void UpsampleTransparent(RenderGraph renderGraph, HDCamera hdCamera, RenderGraphMutableResource colorBuffer, RenderGraphResource lowResTransparentBuffer, RenderGraphResource downsampledDepthBuffer)
         {
-            using (var builder = renderGraph.AddRenderPass<UpsampleTransparentPassData>("Upsample Low Res Transparency", out var passData, ProfilingSampler.Get(HDProfileId.UpsampleLowResTransparent)))
+            using (var builder = renderGraph.AddRenderPass<UpsampleTransparentPassData>("Upsample Low Res Transparency", out var passData, HDProfileId.UpsampleLowResTransparent.Get()))
             {
                 var settings = m_Asset.currentPlatformRenderPipelineSettings.lowresTransparentSettings;
                 if (settings.upsampleType == LowResTransparentUpsample.Bilinear)
@@ -637,7 +637,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (!hdCamera.frameSettings.IsEnabled(FrameSettingsField.Decals))
                 return;
 
-            using (var builder = renderGraph.AddRenderPass<RenderForwardEmissivePassData>("ForwardEmissive", out var passData, ProfilingSampler.Get(HDProfileId.ForwardEmissive)))
+            using (var builder = renderGraph.AddRenderPass<RenderForwardEmissivePassData>("ForwardEmissive", out var passData, HDProfileId.ForwardEmissive.Get()))
             {
                 builder.UseColorBuffer(colorBuffer, 0);
                 builder.UseDepthBuffer(depthStencilBuffer, DepthAccess.ReadWrite);
@@ -661,7 +661,7 @@ namespace UnityEngine.Rendering.HighDefinition
                                 RenderGraphMutableResource  depthStencilBuffer,
                                 CullingResults              cullResults)
         {
-            using (var builder = renderGraph.AddRenderPass<ForwardPassData>("Forward Error", out var passData, ProfilingSampler.Get(HDProfileId.RenderForwardError)))
+            using (var builder = renderGraph.AddRenderPass<ForwardPassData>("Forward Error", out var passData, HDProfileId.RenderForwardError.Get()))
             {
                 builder.UseColorBuffer(colorBuffer, 0);
                 builder.UseDepthBuffer(depthStencilBuffer, DepthAccess.ReadWrite);
@@ -757,7 +757,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 return;
             }
 
-            using (var builder = renderGraph.AddRenderPass<GenerateColorPyramidData>("Color Gaussian MIP Chain", out var passData, ProfilingSampler.Get(HDProfileId.ColorPyramid)))
+            using (var builder = renderGraph.AddRenderPass<GenerateColorPyramidData>("Color Gaussian MIP Chain", out var passData, HDProfileId.ColorPyramid.Get()))
             {
                 passData.colorPyramid = builder.WriteTexture(output);
                 passData.inputColor = builder.ReadTexture(inputColor);
@@ -806,7 +806,7 @@ namespace UnityEngine.Rendering.HighDefinition
                                                     RenderGraphMutableResource  depthStencilBuffer,
                                                     CullingResults              cullResults)
         {
-            using (var builder = renderGraph.AddRenderPass<AccumulateDistortionPassData>("Accumulate Distortion", out var passData, ProfilingSampler.Get(HDProfileId.Distortion)))
+            using (var builder = renderGraph.AddRenderPass<AccumulateDistortionPassData>("Accumulate Distortion", out var passData, HDProfileId.Distortion.Get()))
             {
                 passData.frameSettings = hdCamera.frameSettings;
                 passData.distortionBuffer = builder.UseColorBuffer(renderGraph.CreateTexture(
@@ -845,7 +845,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (!hdCamera.frameSettings.IsEnabled(FrameSettingsField.Distortion))
                 return;
 
-            using (var builder = renderGraph.AddRenderPass<RenderDistortionPassData>("Apply Distortion", out var passData, ProfilingSampler.Get(HDProfileId.ApplyDistortion)))
+            using (var builder = renderGraph.AddRenderPass<RenderDistortionPassData>("Apply Distortion", out var passData, HDProfileId.ApplyDistortion.Get()))
             {
                 passData.applyDistortionMaterial = m_ApplyDistortionMaterial;
                 passData.colorPyramidBuffer = builder.ReadTexture(colorPyramidBuffer);

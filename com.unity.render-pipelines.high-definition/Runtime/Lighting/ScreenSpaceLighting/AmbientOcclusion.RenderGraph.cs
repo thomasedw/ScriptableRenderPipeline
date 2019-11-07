@@ -47,7 +47,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         RenderGraphResource RenderAO(RenderGraph renderGraph, in RenderAOParameters parameters, RenderGraphResource depthPyramid)
         {
-            using (var builder = renderGraph.AddRenderPass<RenderAOPassData>("GTAO Horizon search and integration", out var passData, ProfilingSampler.Get(HDProfileId.HorizonSSAO)))
+            using (var builder = renderGraph.AddRenderPass<RenderAOPassData>("GTAO Horizon search and integration", out var passData, HDProfileId.HorizonSSAO.Get()))
             {
                 builder.EnableAsyncCompute(parameters.runAsync);
 
@@ -139,7 +139,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         RenderGraphResource UpsampleAO(RenderGraph renderGraph, in RenderAOParameters parameters, RenderGraphResource input)
         {
-            using (var builder = renderGraph.AddRenderPass<UpsampleAOPassData>("Upsample GTAO", out var passData, ProfilingSampler.Get(HDProfileId.UpSampleSSAO)))
+            using (var builder = renderGraph.AddRenderPass<UpsampleAOPassData>("Upsample GTAO", out var passData, HDProfileId.UpSampleSSAO.Get()))
             {
                 builder.EnableAsyncCompute(parameters.runAsync);
 

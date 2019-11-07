@@ -210,7 +210,7 @@ namespace UnityEngine.Rendering.HighDefinition
             {
                 if (needUpdate || m_ProbeBakingState[sliceIndex] != ProbeFilteringState.Ready)
                 {
-                    using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.ConvolveReflectionProbe)))
+                    using (new ProfilingScope(cmd, HDProfileId.ConvolveReflectionProbe.Get()))
                     {
                         // For now baking is done directly but will be time sliced in the future. Just preparing the code here.
                         m_ProbeBakingState[sliceIndex] = ProbeFilteringState.Convolving;

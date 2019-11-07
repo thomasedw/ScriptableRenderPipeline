@@ -311,7 +311,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (hdCamera.frameSettings.IsEnabled(FrameSettingsField.MSAA))
             {
                 Debug.Assert(m_MSAASupported);
-                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.ResolveMSAADepth)))
+                using (new ProfilingScope(cmd, HDProfileId.ResolveMSAADepth.Get()))
                 {
                     // Grab the RTIs and set the output render targets
                     m_RTIDs2[0] = m_CameraDepthValuesBuffer.nameID;
@@ -332,7 +332,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (hdCamera.frameSettings.IsEnabled(FrameSettingsField.MSAA))
             {
                 Debug.Assert(m_MSAASupported);
-                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.ResolveMSAAColor)))
+                using (new ProfilingScope(cmd, HDProfileId.ResolveMSAAColor.Get()))
                 {
                     // Grab the RTIs and set the output render targets
                     CoreUtils.SetRenderTarget(cmd, simpleTarget);

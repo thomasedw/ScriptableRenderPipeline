@@ -339,7 +339,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         void CullLights(CommandBuffer cmd)
         {
-            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingCullLights)))
+            using (new ProfilingScope(cmd, HDProfileId.RaytracingCullLights.Get()))
             {
                 // Make sure the culling buffer has the right size
                 if (m_LightCullResult == null || m_LightCullResult.count != totalLightCount)
@@ -368,7 +368,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         void BuildLightCluster(CommandBuffer cmd)
         {
-            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingBuildCluster)))
+            using (new ProfilingScope(cmd, HDProfileId.RaytracingBuildCluster.Get()))
             {
                 var lightClusterSettings = VolumeManager.instance.stack.GetComponent<LightCluster>();
                 numLightsPerCell = lightClusterSettings.maxNumLightsPercell.value;

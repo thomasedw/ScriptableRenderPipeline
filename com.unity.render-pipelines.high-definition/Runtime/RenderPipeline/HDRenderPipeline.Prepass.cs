@@ -180,7 +180,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             bool msaa = hdCamera.frameSettings.IsEnabled(FrameSettingsField.MSAA);
 
-            using (var builder = renderGraph.AddRenderPass<DepthPrepassData>(depthPrepassParameters.passName, out var passData, ProfilingSampler.Get(depthPrepassParameters.profilingId, depthPrepassParameters.passName)))
+            using (var builder = renderGraph.AddRenderPass<DepthPrepassData>(depthPrepassParameters.passName, out var passData, depthPrepassParameters.profilingId.Get(depthPrepassParameters.passName)))
             {
                 passData.frameSettings = hdCamera.frameSettings;
                 passData.msaaEnabled = msaa;
@@ -251,7 +251,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (!hdCamera.frameSettings.IsEnabled(FrameSettingsField.ObjectMotionVectors))
                 return;
 
-            using (var builder = renderGraph.AddRenderPass<ObjectMotionVectorsPassData>("Objects Motion Vectors Rendering", out var passData, ProfilingSampler.Get(HDProfileId.ObjectsMotionVector)))
+            using (var builder = renderGraph.AddRenderPass<ObjectMotionVectorsPassData>("Objects Motion Vectors Rendering", out var passData, HDProfileId.ObjectsMotionVector.Get()))
             {
                 // These flags are still required in SRP or the engine won't compute previous model matrices...
                 // If the flag hasn't been set yet on this camera, motion vectors will skip a frame.
@@ -338,7 +338,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 return;
             }
 
-            using (var builder = renderGraph.AddRenderPass<GBufferPassData>("GBuffer", out var passData, ProfilingSampler.Get(HDProfileId.GBuffer)))
+            using (var builder = renderGraph.AddRenderPass<GBufferPassData>("GBuffer", out var passData, HDProfileId.GBuffer.Get()))
             {
                 FrameSettings frameSettings = hdCamera.frameSettings;
 
@@ -424,7 +424,7 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             if (!m_IsDepthBufferCopyValid)
             {
-                using (var builder = renderGraph.AddRenderPass<CopyDepthPassData>("Copy depth buffer", out var passData, ProfilingSampler.Get(HDProfileId.CopyDepthBuffer)))
+                using (var builder = renderGraph.AddRenderPass<CopyDepthPassData>("Copy depth buffer", out var passData, HDProfileId.CopyDepthBuffer.Get()))
                 {
                     passData.inputDepth = builder.ReadTexture(output.resolvedDepthBuffer);
                     passData.outputDepth = builder.WriteTexture(renderGraph.CreateTexture(new TextureDesc(ComputeDepthBufferMipChainSize, true, true)
@@ -522,7 +522,7 @@ namespace UnityEngine.Rendering.HighDefinition
             // We need to copy depth buffer texture if we want to bind it at this stage
             CopyDepthBufferIfNeeded(renderGraph, hdCamera, ref output);
 
-            using (var builder = renderGraph.AddRenderPass<RenderDBufferPassData>("DBufferRender", out var passData, ProfilingSampler.Get(HDProfileId.DBufferRender)))
+            using (var builder = renderGraph.AddRenderPass<RenderDBufferPassData>("DBufferRender", out var passData, HDProfileId.DBufferRender.Get()))
             {
                 passData.meshDecalsRendererList = builder.UseRendererList(renderGraph.CreateRendererList(PrepareMeshDecalsRendererList(cullingResults, hdCamera, use4RTs)));
                 SetupDBufferTargets(renderGraph, passData, use4RTs, ref output, builder);
@@ -559,7 +559,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             if (!hdCamera.frameSettings.IsEnabled(FrameSettingsField.MSAA)) // MSAA not supported
             {
-                using (var builder = renderGraph.AddRenderPass<DBufferNormalPatchData>("DBuffer Normal (forward)", out var passData, ProfilingSampler.Get(HDProfileId.DBufferNormal)))
+                using (var builder = renderGraph.AddRenderPass<DBufferNormalPatchData>("DBuffer Normal (forward)", out var passData, HDProfileId.DBufferNormal.Get()))
                 {
                     passData.parameters = PrepareDBufferNormalPatchParameters(hdCamera);
                     ReadDBuffer(output.dbuffer, builder);
@@ -593,7 +593,7 @@ namespace UnityEngine.Rendering.HighDefinition
             // If the depth buffer hasn't been already copied by the decal pass, then we do the copy here.
             CopyDepthBufferIfNeeded(renderGraph, hdCamera, ref output);
 
-            using (var builder = renderGraph.AddRenderPass<GenerateDepthPyramidPassData>("Generate Depth Buffer MIP Chain", out var passData, ProfilingSampler.Get(HDProfileId.DepthPyramid)))
+            using (var builder = renderGraph.AddRenderPass<GenerateDepthPyramidPassData>("Generate Depth Buffer MIP Chain", out var passData, HDProfileId.DepthPyramid.Get()))
             {
                 passData.depthTexture = builder.WriteTexture(output.depthPyramidTexture);
                 passData.mipInfo = GetDepthBufferMipChainInfo();
@@ -626,7 +626,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (!hdCamera.frameSettings.IsEnabled(FrameSettingsField.MotionVectors))
                 return;
 
-            using (var builder = renderGraph.AddRenderPass<CameraMotionVectorsPassData>("Camera Motion Vectors Rendering", out var passData, ProfilingSampler.Get(HDProfileId.CameraMotionVectors)))
+            using (var builder = renderGraph.AddRenderPass<CameraMotionVectorsPassData>("Camera Motion Vectors Rendering", out var passData, HDProfileId.CameraMotionVectors.Get()))
             {
                 // These flags are still required in SRP or the engine won't compute previous model matrices...
                 // If the flag hasn't been set yet on this camera, motion vectors will skip a frame.
