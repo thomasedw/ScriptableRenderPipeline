@@ -14,7 +14,19 @@ namespace UnityEngine.Rendering.HighDefinition
         /// <summary>
         /// Name of the custom pass
         /// </summary>
-        public string           name = "Custom Pass";
+        public string name
+        {
+            get => m_Name;
+            set
+            {
+                m_Name = value;
+                m_ProfilingSampler = new ProfilingSampler(m_Name);
+            }
+        }
+        string m_Name = "Custom Pass";
+
+        internal ProfilingSampler   profilingSampler { get => m_ProfilingSampler; }
+        ProfilingSampler            m_ProfilingSampler = new ProfilingSampler("Custom Pass");
 
         /// <summary>
         /// Is the custom pass enabled or not
@@ -68,7 +80,7 @@ namespace UnityEngine.Rendering.HighDefinition
         }
 
         /// <summary>
-        /// Render Queue filters for the DrawRenderers custom pass 
+        /// Render Queue filters for the DrawRenderers custom pass
         /// </summary>
         public enum RenderQueueType
         {
@@ -112,7 +124,7 @@ namespace UnityEngine.Rendering.HighDefinition
             isExecuting = true;
             Execute(renderContext, cmd, hdCamera, cullingResult);
             isExecuting = false;
-            
+
             // Set back the camera color buffer is we were using a custom buffer as target
             if (targetDepthBuffer != TargetBuffer.Camera)
                 CoreUtils.SetRenderTarget(cmd, targets.cameraColorBuffer);

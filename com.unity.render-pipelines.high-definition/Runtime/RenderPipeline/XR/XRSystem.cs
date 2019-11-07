@@ -285,10 +285,10 @@ namespace UnityEngine.Rendering.HighDefinition
             if (display == null || !display.running)
                 return;
 
-            using (new ProfilingScope(cmd, "XR Mirror View"))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.XRMirrorView)))
             {
                 cmd.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
-              
+
                 int mirrorBlitMode = display.GetPreferredMirrorBlitMode();
                 if (display.GetMirrorViewBlitDesc(null, out var blitDesc, mirrorBlitMode))
                 {

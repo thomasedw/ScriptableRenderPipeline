@@ -560,7 +560,7 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             ComputeShader shadowBlurMomentsCS = parameters.evsmShadowBlurMomentsCS;
 
-            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderShadowMaps, ProfilingType.CpuGpu, "Render & Blur Moment Shadows")))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderShadowMaps, "Render & Blur Moment Shadows")))
             {
                 int generateAndBlurMomentsKernel = shadowBlurMomentsCS.FindKernel("ConvertAndBlur");
                 int blurMomentsKernel = shadowBlurMomentsCS.FindKernel("Blur");
@@ -585,7 +585,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 int requestIdx = 0;
                 foreach (var shadowRequest in parameters.shadowRequests)
                 {
-                    using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderShadowMaps, ProfilingType.Gpu, "EVSM conversion and blur")))
+                    using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderShadowMaps, "EVSM conversion and blur")))
                     {
                         int downsampledWidth = Mathf.CeilToInt(shadowRequest.atlasViewport.width * 0.5f);
                         int downsampledHeight = Mathf.CeilToInt(shadowRequest.atlasViewport.height * 0.5f);
@@ -627,7 +627,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 {
                     if (finalAtlasTexture[i] != 0)
                     {
-                        using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderShadowMaps, ProfilingType.Gpu, "Copy into main atlas")))
+                        using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderShadowMaps, "Copy into main atlas")))
                         {
                             var shadowRequest = parameters.shadowRequests[i];
                             int downsampledWidth = Mathf.CeilToInt(shadowRequest.atlasViewport.width * 0.5f);
@@ -658,7 +658,7 @@ namespace UnityEngine.Rendering.HighDefinition
             ComputeShader momentCS = parameters.imShadowBlurMomentsCS;
             if (momentCS == null) return;
 
-            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderShadowMaps, ProfilingType.Gpu, "Render Moment Shadows")))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderShadowMaps, "Render Moment Shadows")))
             {
                 int computeMomentKernel = momentCS.FindKernel("ComputeMomentShadows");
                 int summedAreaHorizontalKernel = momentCS.FindKernel("MomentSummedAreaTableHorizontal");

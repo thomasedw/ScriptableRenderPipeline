@@ -247,7 +247,7 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             if (enabled && xrSdkEnabled && occlusionMeshMaterial != null)
             {
-                using (new ProfilingScope(cmd, "XR Occlusion Mesh"))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.XROcclusionMesh)))
                 {
                     Matrix4x4 m = Matrix4x4.Ortho(0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f);
 

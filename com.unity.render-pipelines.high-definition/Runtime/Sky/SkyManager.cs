@@ -440,28 +440,31 @@ namespace UnityEngine.Rendering.HighDefinition
 
         void RenderSkyToCubemap(SkyUpdateContext skyContext)
         {
-            var renderingContext = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderingContext;
-            var renderer = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderer;
-
-            for (int i = 0; i < 6; ++i)
+            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, ProfilingSampler.Get(HDProfileId.RenderSkyToCubemap)))
             {
-                m_BuiltinParameters.pixelCoordToViewDirMatrix = m_facePixelCoordToViewDirMatrices[i];
-                m_BuiltinParameters.viewMatrix = m_CameraRelativeViewMatrices[i];
-                m_BuiltinParameters.colorBuffer = renderingContext.skyboxCubemapRT;
-                m_BuiltinParameters.depthBuffer = null;
+                var renderingContext = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderingContext;
+                var renderer = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderer;
 
-                CoreUtils.SetRenderTarget(m_BuiltinParameters.commandBuffer, renderingContext.skyboxCubemapRT, ClearFlag.None, 0, (CubemapFace)i);
-                renderer.RenderSky(m_BuiltinParameters, true, skyContext.skySettings.includeSunInBaking.value);
+                for (int i = 0; i < 6; ++i)
+                {
+                    m_BuiltinParameters.pixelCoordToViewDirMatrix = m_facePixelCoordToViewDirMatrices[i];
+                    m_BuiltinParameters.viewMatrix = m_CameraRelativeViewMatrices[i];
+                    m_BuiltinParameters.colorBuffer = renderingContext.skyboxCubemapRT;
+                    m_BuiltinParameters.depthBuffer = null;
+
+                    CoreUtils.SetRenderTarget(m_BuiltinParameters.commandBuffer, renderingContext.skyboxCubemapRT, ClearFlag.None, 0, (CubemapFace)i);
+                    renderer.RenderSky(m_BuiltinParameters, true, skyContext.skySettings.includeSunInBaking.value);
+                }
+
+                // Generate mipmap for our cubemap
+                Debug.Assert(renderingContext.skyboxCubemapRT.rt.autoGenerateMips == false);
+                m_BuiltinParameters.commandBuffer.GenerateMips(renderingContext.skyboxCubemapRT);
             }
-
-            // Generate mipmap for our cubemap
-            Debug.Assert(renderingContext.skyboxCubemapRT.rt.autoGenerateMips == false);
-            m_BuiltinParameters.commandBuffer.GenerateMips(renderingContext.skyboxCubemapRT);
         }
 
         void RenderCubemapGGXConvolution(SkyUpdateContext skyContext)
         {
-            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, "Update Env: GGX Convolution"))
+            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, ProfilingSampler.Get(HDProfileId.UpdateSkyEnvironmentConvolution)))
             {
                 var renderingContext = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderingContext;
                 var renderer = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderer;
@@ -671,33 +674,26 @@ namespace UnityEngine.Rendering.HighDefinition
                     (skyContext.skySettings.updateMode.value == EnvironmentUpdateMode.OnChanged && skyHash != skyContext.skyParametersHash) ||
                     (skyContext.skySettings.updateMode.value == EnvironmentUpdateMode.Realtime && skyContext.currentUpdateTime > skyContext.skySettings.updatePeriod.value))
                 {
-                    using (new ProfilingScope(cmd, "Sky Environment Pass"))
+                    using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.UpdateSkyEnvironment)))
                     {
-                        using (new ProfilingScope(cmd, "Update Env: Generate Lighting Cubemap"))
+                        // In case the hash has changed and update mode is "On Changed" we need to acquire a new context.
+                        AcquireSkyRenderingContext(skyContext, skyHash);
+                        RenderSkyToCubemap(skyContext);
+
+                        if (updateAmbientProbe)
                         {
-                            // In case the hash has changed and update mode is "On Changed" we need to acquire a new context.
-                            AcquireSkyRenderingContext(skyContext, skyHash);
-
-                            RenderSkyToCubemap(skyContext);
-
-                            if (updateAmbientProbe)
+                            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.UpdateSkyAmbientProbe)))
                             {
-                                using (new ProfilingScope(cmd, "Update Ambient Probe"))
-                                {
-                                    cmd.SetComputeBufferParam(m_ComputeAmbientProbeCS, m_ComputeAmbientProbeKernel, m_AmbientProbeOutputBufferParam, renderingContext.ambientProbeResult);
-                                    cmd.SetComputeTextureParam(m_ComputeAmbientProbeCS, m_ComputeAmbientProbeKernel, m_AmbientProbeInputCubemap, renderingContext.skyboxCubemapRT);
-                                    cmd.DispatchCompute(m_ComputeAmbientProbeCS, m_ComputeAmbientProbeKernel, 1, 1, 1);
-                                    cmd.RequestAsyncReadback(renderingContext.ambientProbeResult, renderingContext.OnComputeAmbientProbeDone);
-                                }
+                                cmd.SetComputeBufferParam(m_ComputeAmbientProbeCS, m_ComputeAmbientProbeKernel, m_AmbientProbeOutputBufferParam, renderingContext.ambientProbeResult);
+                                cmd.SetComputeTextureParam(m_ComputeAmbientProbeCS, m_ComputeAmbientProbeKernel, m_AmbientProbeInputCubemap, renderingContext.skyboxCubemapRT);
+                                cmd.DispatchCompute(m_ComputeAmbientProbeCS, m_ComputeAmbientProbeKernel, 1, 1, 1);
+                                cmd.RequestAsyncReadback(renderingContext.ambientProbeResult, renderingContext.OnComputeAmbientProbeDone);
                             }
                         }
 
                         if (renderingContext.supportsConvolution)
                         {
-                            using (new ProfilingScope(cmd, "Update Env: Convolve Lighting Cubemap"))
-                            {
-                                RenderCubemapGGXConvolution(skyContext);
-                            }
+                            RenderCubemapGGXConvolution(skyContext);
                         }
 
                         skyContext.skyParametersHash = skyHash;
@@ -763,7 +759,7 @@ namespace UnityEngine.Rendering.HighDefinition
             var skyContext = hdCamera.visualSky;
             if (skyContext.IsValid() && hdCamera.clearColorMode == HDAdditionalCameraData.ClearColorMode.Sky)
             {
-                using (new ProfilingScope(cmd, "Sky Pass"))
+                using (new ProfilingScope(m_BuiltinParameters.commandBuffer, ProfilingSampler.Get(HDProfileId.RenderSky)))
                 {
                     m_BuiltinParameters.hdCamera = hdCamera;
                     m_BuiltinParameters.commandBuffer = cmd;
@@ -795,7 +791,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
                     // If the luxmeter is enabled, we don't render the sky
                     if (debugSettings.data.lightingDebugSettings.debugLightingMode != DebugLightingMode.LuxMeter)
-        {
+                    {
                         // When rendering the visual sky for reflection probes, we need to remove the sun disk if skySettings.includeSunInBaking is false.
                         cachedContext.renderer.RenderSky(m_BuiltinParameters, false, hdCamera.camera.cameraType != CameraType.Reflection || skyContext.skySettings.includeSunInBaking.value);
                     }
@@ -810,7 +806,7 @@ namespace UnityEngine.Rendering.HighDefinition
                                                       RTHandle depthBuffer,
                                                       Matrix4x4 pixelCoordToViewDirWS, bool isMSAA)
         {
-            using (new ProfilingScope(cmd, "Opaque Atmospheric Scattering"))
+            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, ProfilingSampler.Get(HDProfileId.OpaqueAtmosphericScattering)))
             {
                 m_OpaqueAtmScatteringBlock.SetMatrix(HDShaderIDs._PixelCoordToViewDirWS, pixelCoordToViewDirWS);
                 if (isMSAA)

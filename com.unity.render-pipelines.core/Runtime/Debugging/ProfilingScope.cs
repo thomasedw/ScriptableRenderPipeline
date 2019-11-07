@@ -5,39 +5,20 @@ using UnityEngine.Profiling;
 
 namespace UnityEngine.Rendering
 {
-    [Flags]
-    public enum ProfilingType
-    {
-        Cpu = 1 << 0,
-        Gpu = 1 << 1,
-        InlineCpu = 1 << 2,
-
-        CpuGpu = Cpu | Gpu,
-        AllCpu = Cpu | InlineCpu,
-        All = Cpu | Gpu | InlineCpu,
-    }
-
     public class ProfilingSampler
     {
-        public ProfilingSampler(string name, ProfilingType samplerType)
+        public ProfilingSampler(string name)
         {
-            bool inlineCpuProfiling = samplerType.HasFlag(ProfilingType.InlineCpu);
-            bool cpuProfiling = samplerType.HasFlag(ProfilingType.Cpu);
-            bool gpuProfiling = samplerType.HasFlag(ProfilingType.Gpu);
-
-            sampler = (cpuProfiling || gpuProfiling) ? CustomSampler.Create(name, samplerType.HasFlag(ProfilingType.Gpu)) : null;
-            inlineSampler = inlineCpuProfiling ? CustomSampler.Create(string.Format("INL_{0}", name)) : null;
-            m_SamplerType = samplerType;
+            sampler = CustomSampler.Create(name, true);
+            inlineSampler = CustomSampler.Create(string.Format("INL_{0}", name));
         }
 
-        public bool IsValid(ProfilingType samplerType) { return (samplerType == m_SamplerType) && (sampler != null || inlineSampler != null); }
+        public bool IsValid() { return (sampler != null && inlineSampler != null); }
 
         public CustomSampler sampler;
         public CustomSampler inlineSampler;
 
-        ProfilingType m_SamplerType;
-
-        public static ProfilingSampler Get<ProfilingSamplerId>(ProfilingSamplerId samplerId, ProfilingType samplerType = ProfilingType.Cpu, string nameOverride = "") where ProfilingSamplerId : Enum
+        public static ProfilingSampler Get<ProfilingSamplerId>(ProfilingSamplerId samplerId, string nameOverride = "") where ProfilingSamplerId : Enum
         {
             ProfilingSampler[] s_Samplers = null;
 
@@ -53,9 +34,9 @@ namespace UnityEngine.Rendering
 
             int index = (int)(object)samplerId;
             var sampler = s_Samplers[index];
-            if (sampler == null || !sampler.IsValid(samplerType))
+            if (sampler == null || !sampler.IsValid())
             {
-                s_Samplers[index] = new ProfilingSampler(nameOverride == "" ? samplerId.ToString() : nameOverride, samplerType);
+                s_Samplers[index] = new ProfilingSampler(nameOverride == "" ? samplerId.ToString() : nameOverride);
             }
 #if UNITY_EDITOR
             if (nameOverride != "" && s_Samplers[index].sampler.name != nameOverride)
@@ -65,6 +46,11 @@ namespace UnityEngine.Rendering
 #endif
             return s_Samplers[(int)(object)samplerId];
         }
+    }
+
+    class ProfileSamplers<EnumType>
+    {
+
     }
 
     public struct ProfilingScope : IDisposable
@@ -81,7 +67,7 @@ namespace UnityEngine.Rendering
             m_Sampler = sampler.sampler;
             m_InlineSampler = sampler.inlineSampler;
 
-            if (cmd != null && m_Sampler != null)
+            if (cmd != null)
                 cmd.BeginSample(m_Sampler);
             m_InlineSampler?.Begin();
         }
@@ -102,9 +88,65 @@ namespace UnityEngine.Rendering
             // this but will generate garbage on every frame (and this struct is used quite a lot).
             if (disposing)
             {
-                if (m_Cmd != null && m_Sampler != null)
+                if (m_Cmd != null)
                     m_Cmd.EndSample(m_Sampler);
                 m_InlineSampler?.End();
+            }
+
+            m_Disposed = true;
+        }
+    }
+
+    [System.Obsolete("Please use ProfilingScope")]
+    public struct ProfilingSample : IDisposable
+    {
+        readonly CommandBuffer m_Cmd;
+        readonly string m_Name;
+
+        bool m_Disposed;
+        CustomSampler m_Sampler;
+
+        public ProfilingSample(CommandBuffer cmd, string name, CustomSampler sampler = null)
+        {
+            m_Cmd = cmd;
+            m_Name = name;
+            m_Disposed = false;
+            if (cmd != null && name != "")
+                cmd.BeginSample(name);
+            m_Sampler = sampler;
+            m_Sampler?.Begin();
+        }
+
+        // Shortcut to string.Format() using only one argument (reduces Gen0 GC pressure)
+        public ProfilingSample(CommandBuffer cmd, string format, object arg) : this(cmd, string.Format(format, arg))
+        {
+        }
+
+        // Shortcut to string.Format() with variable amount of arguments - for performance critical
+        // code you should pre-build & cache the marker name instead of using this
+        public ProfilingSample(CommandBuffer cmd, string format, params object[] args) : this(cmd, string.Format(format, args))
+        {
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        // Protected implementation of Dispose pattern.
+        void Dispose(bool disposing)
+        {
+            if (m_Disposed)
+                return;
+
+            // As this is a struct, it could have been initialized using an empty constructor so we
+            // need to make sure `cmd` isn't null to avoid a crash. Switching to a class would fix
+            // this but will generate garbage on every frame (and this struct is used quite a lot).
+            if (disposing)
+            {
+                if (m_Cmd != null && m_Name != "")
+                    m_Cmd.EndSample(m_Name);
+                m_Sampler?.End();
             }
 
             m_Disposed = true;
