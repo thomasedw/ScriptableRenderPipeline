@@ -1,7 +1,10 @@
+//#define ENABLE_GPU_PROFILER
+
 using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.Profiling;
+
 
 namespace UnityEngine.Rendering
 {
@@ -9,8 +12,12 @@ namespace UnityEngine.Rendering
     {
         public ProfilingSampler(string name)
         {
+#if ENABLE_GPU_PROFILER
             sampler = CustomSampler.Create(name, true); // Event markers, command buffer CPU profiling and GPU profiling
-            inlineSampler = CustomSampler.Create(name); // Profiles code "immediately"
+#else
+            sampler = CustomSampler.Create(name); // Event markers, command buffer CPU profiling and GPU profiling
+#endif
+            inlineSampler = CustomSampler.Create($"Inl_{name}"); // Profiles code "immediately"
 
             m_Recorder = sampler.GetRecorder();
             m_Recorder.enabled = false;
@@ -36,8 +43,13 @@ namespace UnityEngine.Rendering
         }
 
         public string name => sampler.name;
+#if ENABLE_GPU_PROFILER
         public float gpuElapsedTime => m_Recorder.enabled ? m_Recorder.gpuElapsedNanoseconds / 1000000.0f : 0.0f;
         public int gpuSampleCount => m_Recorder.enabled ? m_Recorder.gpuSampleBlockCount : 0;
+#else
+        public float gpuElapsedTime => 0.0f;
+        public int gpuSampleCount => 0;
+#endif
         public float cpuElapsedTime => m_Recorder.enabled ? m_Recorder.elapsedNanoseconds / 1000000.0f : 0.0f;
         public int cpuSampleCount => m_Recorder.enabled ? m_Recorder.sampleBlockCount : 0;
         public float inlineCpuElapsedTime => m_InlineRecorder.enabled ? m_InlineRecorder.elapsedNanoseconds / 1000000.0f : 0.0f;
@@ -85,8 +97,13 @@ namespace UnityEngine.Rendering
             m_Sampler = sampler.sampler;
             m_InlineSampler = sampler.inlineSampler;
 
+#if ENABLE_GPU_PROFILER
             if (cmd != null)
                 cmd.BeginSample(m_Sampler);
+#else
+            if (cmd != null)
+                cmd.BeginSample(m_Sampler.name);
+#endif
             m_InlineSampler?.Begin();
         }
 
@@ -106,8 +123,13 @@ namespace UnityEngine.Rendering
             // this but will generate garbage on every frame (and this struct is used quite a lot).
             if (disposing)
             {
+#if ENABLE_GPU_PROFILER
                 if (m_Cmd != null)
                     m_Cmd.EndSample(m_Sampler);
+#else
+                if (m_Cmd != null)
+                    m_Cmd.EndSample(m_Sampler.name);
+#endif
                 m_InlineSampler?.End();
             }
 
