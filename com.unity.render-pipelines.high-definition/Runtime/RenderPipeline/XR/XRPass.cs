@@ -277,7 +277,7 @@ namespace UnityEngine.Rendering.HighDefinition
             // Callback for custom mirror view
             if (customMirrorView != null)
             {
-                using (new ProfilingSample(cmd, "XR Custom Mirror View"))
+                using (new ProfilingScope(cmd, HDProfileId.XRCustomMirrorView.Get()))
                 {
                     customMirrorView(this, cmd, hdCamera.camera.targetTexture, hdCamera.camera.pixelRect);
                 }

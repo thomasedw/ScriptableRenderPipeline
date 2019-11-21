@@ -811,11 +811,10 @@ namespace UnityEngine.Rendering.HighDefinition
             if (!Fog.IsVolumetricLightingEnabled(hdCamera))
                 return;
 
-            using (new ProfilingScope(cmd, HDProfileId.VolumetricLighting.Get()))
             var parameters = PrepareVolumetricLightingParameters(hdCamera, frameIndex);
 
+            using (new ProfilingScope(cmd, HDProfileId.VolumetricLighting.Get()))
             {
-
                 // It is safe to request these RTs even if they have not been allocated.
                 // The system will return NULL in that case.
                 RTHandle historyRT  = hdCamera.GetPreviousFrameRT((int)HDCameraFrameHistoryType.VolumetricLighting);
@@ -827,7 +826,7 @@ namespace UnityEngine.Rendering.HighDefinition
                     hdCamera.volumetricHistoryIsValid = true; // For the next frame...
             }
 
-            using (new ProfilingSample(cmd, "Volumetric Lighting Filtering"))
+            using (new ProfilingScope(cmd, HDProfileId.VolumetricLightingFiltering.Get()))
             {
                 // Let's filter out volumetric buffer
                 if (parameters.filterVolume)

@@ -1132,8 +1132,8 @@ namespace UnityEngine.Rendering.HighDefinition
             lightData.shadowDimmer           = additionalLightData.shadowDimmer;
             lightData.volumetricShadowDimmer = additionalLightData.volumetricShadowDimmer;
             GetContactShadowMask(additionalLightData, HDAdditionalLightData.ScalableSettings.UseContactShadow(m_Asset), hdCamera, ref lightData.contactShadowMask,ref lightData.isRayTracedContactShadow);
-            
-            // We want to have a colored penumbra if the flag is on and the color is not gray            
+
+            // We want to have a colored penumbra if the flag is on and the color is not gray
             bool penumbraTint = additionalLightData.penumbraTint && ((additionalLightData.shadowTint.r != additionalLightData.shadowTint.g) || (additionalLightData.shadowTint.g != additionalLightData.shadowTint.b));
             lightData.penumbraTint = penumbraTint ? 1.0f : 0.0f;
             if (penumbraTint)
@@ -1408,7 +1408,7 @@ namespace UnityEngine.Rendering.HighDefinition
             lightData.volumetricShadowDimmer = shadowDistanceFade * additionalLightData.volumetricShadowDimmer;
             GetContactShadowMask(additionalLightData, HDAdditionalLightData.ScalableSettings.UseContactShadow(m_Asset), hdCamera, ref lightData.contactShadowMask, ref lightData.isRayTracedContactShadow);
 
-            // We want to have a colored penumbra if the flag is on and the color is not gray            
+            // We want to have a colored penumbra if the flag is on and the color is not gray
             bool penumbraTint = additionalLightData.penumbraTint && ((additionalLightData.shadowTint.r != additionalLightData.shadowTint.g) || (additionalLightData.shadowTint.g != additionalLightData.shadowTint.b));
             lightData.penumbraTint = penumbraTint ? 1.0f : 0.0f;
             if (penumbraTint)
@@ -2086,7 +2086,7 @@ namespace UnityEngine.Rendering.HighDefinition
                         LightCategory lightCategory = LightCategory.Count;
                         GPULightType gpuLightType = GPULightType.Point;
                         LightVolumeType lightVolumeType = LightVolumeType.Count;
-                        HDRenderPipeline.EvaluateGPULightType(lightType, additionalData.spotLightShape, additionalData.areaLightShape, 
+                        HDRenderPipeline.EvaluateGPULightType(lightType, additionalData.spotLightShape, additionalData.areaLightShape,
                                                                 ref lightCategory, ref gpuLightType, ref lightVolumeType);
 
                         if (hasDebugLightFilter
@@ -3046,7 +3046,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         static void PushShadowGlobalParams(in ShadowGlobalParameters param, CommandBuffer cmd)
         {
-            using (new ProfilingSample(cmd, "Push Shadow Global Parameters", CustomSamplerId.PushShadowGlobalParameters.GetSampler()))
+            using (new ProfilingScope(cmd, HDProfileId.PushShadowGlobalParameters.Get()))
             {
                 Camera camera = param.hdCamera.camera;
 
@@ -3059,7 +3059,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         static void PushLightLoopGlobalParams(in LightLoopGlobalParameters param, CommandBuffer cmd)
         {
-            using (new ProfilingSample(cmd, "Push Light Loop Global Parameters", CustomSamplerId.TPPushGlobalParameters.GetSampler()))
+            using (new ProfilingScope(cmd, HDProfileId.PushGlobalParameters.Get()))
             {
                 Camera camera = param.hdCamera.camera;
 

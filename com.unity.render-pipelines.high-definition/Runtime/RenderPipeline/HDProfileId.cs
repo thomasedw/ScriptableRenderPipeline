@@ -12,14 +12,6 @@ namespace UnityEngine.Rendering.HighDefinition
         HorizonSSAO,
         DenoiseSSAO,
         UpSampleSSAO,
-        RenderShadowMaps,
-        RenderMomentShadowMaps,
-        RenderPunctualShadowMaps,
-        RenderDirectionalShadowMaps,
-        RenderAreaShadowMaps,
-        RenderEVSMShadowMaps,
-        RenderEVSMShadowMapsBlur,
-        RenderEVSMShadowMapsCopyToAtlas,
         ScreenSpaceShadows,
         BuildLightList,
         ContactShadows,
@@ -89,12 +81,14 @@ namespace UnityEngine.Rendering.HighDefinition
         RenderSkyToCubemap,
         UpdateSkyEnvironment,
         UpdateSkyAmbientProbe,
+        PreRenderSky,
         RenderSky,
         OpaqueAtmosphericScattering,
         InScatteredRadiancePrecomputation,
 
         VolumeVoxelization,
         VolumetricLighting,
+        VolumetricLightingFiltering,
         PrepareVisibleDensityVolumeList,
 
         RaytracingBuildCluster,
@@ -114,11 +108,17 @@ namespace UnityEngine.Rendering.HighDefinition
         PushLightDataGlobalParameters,
 
         // Profile sampler for shadow
-        RenderShadowMaps,
         PushShadowGlobalParameters,
+        RenderShadowMaps,
+        RenderMomentShadowMaps,
+        RenderPunctualShadowMaps,
+        RenderDirectionalShadowMaps,
+        RenderAreaShadowMaps,
+        RenderEVSMShadowMaps,
+        RenderEVSMShadowMapsBlur,
+        RenderEVSMShadowMapsCopyToAtlas,
 
         // Profile sampler for tile pass
-        PrepareLightsForGPU,
         LightLoopPushGlobalParameters,
         TileClusterLightingDebug,
         DisplayShadows,
@@ -132,6 +132,8 @@ namespace UnityEngine.Rendering.HighDefinition
         VolumeUpdate,
         XROcclusionMesh,
         XRMirrorView,
+        XRCustomMirrorView,
+        XRDepthCopy,
 
         // Low res transparency
         DownsampleDepth,

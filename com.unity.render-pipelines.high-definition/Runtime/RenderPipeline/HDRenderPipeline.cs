@@ -2238,7 +2238,7 @@ namespace UnityEngine.Rendering.HighDefinition
             // Copy and rescale depth buffer for XR devices
             if (hdCamera.xr.enabled && hdCamera.xr.copyDepth)
             {
-                using (new ProfilingSample(cmd, "XR depth copy"))
+                using (new ProfilingScope(cmd, HDProfileId.XRDepthCopy.Get()))
                 {
                     var depthBuffer = m_SharedRTManager.GetDepthStencilBuffer();
                     var rtScale = depthBuffer.rtHandleProperties.rtHandleScale / DynamicResolutionHandler.instance.GetCurrentScale();
@@ -2263,7 +2263,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
                         hdCamera.xr.StopSinglePass(cmd, hdCamera.camera, renderContext);
 
-                using (new ProfilingSample(cmd, HDProfileId.BlitToFinalRTDevBuildOnly.Get()))
+                using (new ProfilingScope(cmd, HDProfileId.BlitToFinalRTDevBuildOnly.Get()))
                 {
                     for (int viewIndex = 0; viewIndex < hdCamera.viewCount; ++viewIndex)
                     {
@@ -2568,7 +2568,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             if (hdCamera.frameSettings.IsEnabled(FrameSettingsField.CustomPass))
             {
-                using (new ProfilingSample(null, "CustomPass.Cull", CustomSamplerId.CustomPassCullResultsCull.GetSampler()))
+                using (new ProfilingScope(null, HDProfileId.CustomPassCullResultsCull.Get()))
                     cullingResults.customPassCullingResults = CustomPassVolume.Cull(renderContext, hdCamera);
             }
 
