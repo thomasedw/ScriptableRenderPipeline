@@ -1,13 +1,15 @@
 //#define ENABLE_GPU_PROFILER
 
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using UnityEngine.Profiling;
 
 
 namespace UnityEngine.Rendering
 {
+    /// <summary>
+    /// Wrapper around CPU and GPU profiling samplers.
+    /// Use this along ProfilingScope to profile a piece of code.
+    /// </summary>
     public class ProfilingSampler
     {
         public ProfilingSampler(string name)
@@ -56,6 +58,10 @@ namespace UnityEngine.Rendering
         public int inlineCpuSampleCount => m_InlineRecorder.enabled ? m_InlineRecorder.sampleBlockCount : 0;
     }
 
+    /// <summary>
+    /// Helper class to manage profiling samplers referenced by an Id derived from an enumeration
+    /// </summary>
+    /// <typeparam name="ProfilingSamplerId"></typeparam>
     public class ProfileSamplerList<ProfilingSamplerId> where ProfilingSamplerId : Enum
     {
         static ProfilingSampler[] s_Samplers = null;
@@ -83,6 +89,9 @@ namespace UnityEngine.Rendering
         }
     }
 
+    /// <summary>
+    /// Scoped Profiling makers
+    /// </summary>
     public struct ProfilingScope : IDisposable
     {
         CommandBuffer   m_Cmd;
@@ -90,7 +99,7 @@ namespace UnityEngine.Rendering
         CustomSampler   m_Sampler;
         CustomSampler   m_InlineSampler;
 
-        public ProfilingScope(CommandBuffer cmd, in ProfilingSampler sampler)
+        public ProfilingScope(CommandBuffer cmd, ProfilingSampler sampler)
         {
             m_Cmd = cmd;
             m_Disposed = false;

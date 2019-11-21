@@ -8,7 +8,7 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
         RenderGraphClearDebug,
     }
 
-    internal static class HDCustomSamplerExtension
+    internal static class RenderGraphProfilingSamplerExtension
     {
         public static ProfilingSampler Get(this RenderGraphProfileId samplerId)
         {
