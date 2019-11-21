@@ -216,7 +216,8 @@ namespace UnityEngine.Rendering.HighDefinition
                 var renderer = m_CachedSkyContexts[hdCamera.lightingSky.cachedSkyRenderingContextId].renderer;
                 if (renderer != null)
             {
-                    renderer.SetGlobalSkyData(cmd, hdCamera.lightingSky.skySettings);
+                    m_BuiltinParameters.skySettings = hdCamera.lightingSky.skySettings;
+                    renderer.SetGlobalSkyData(cmd, m_BuiltinParameters);
             }
         }
         }
@@ -753,13 +754,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 cmd.SetGlobalInt(HDShaderIDs._EnvLightSkyEnabled, 0);
             }
         }
-
-        public void RenderSky(HDCamera hdCamera, Light sunLight, RTHandle colorBuffer, RTHandle depthBuffer, DebugDisplaySettings debugSettings, int frameIndex, CommandBuffer cmd)
-        {
-            var skyContext = hdCamera.visualSky;
-            if (skyContext.IsValid() && hdCamera.clearColorMode == HDAdditionalCameraData.ClearColorMode.Sky)
-            {
-                using (new ProfilingScope(m_BuiltinParameters.commandBuffer, HDProfileId.RenderSky.Get()))
+        internal void UpdateBuiltinParameters(SkyUpdateContext skyContext, HDCamera hdCamera, Light sunLight, RTHandle colorBuffer, RTHandle depthBuffer, DebugDisplaySettings debugSettings, int frameIndex, CommandBuffer cmd)
                 {
                     m_BuiltinParameters.hdCamera = hdCamera;
                     m_BuiltinParameters.commandBuffer = cmd;
@@ -773,6 +768,49 @@ namespace UnityEngine.Rendering.HighDefinition
                     m_BuiltinParameters.debugSettings = debugSettings;
                     m_BuiltinParameters.frameIndex = frameIndex;
                     m_BuiltinParameters.skySettings = skyContext.skySettings;
+        }
+
+        public void PreRenderSky(HDCamera hdCamera, Light sunLight, RTHandle colorBuffer, RTHandle depthBuffer, DebugDisplaySettings debugSettings, int frameIndex, CommandBuffer cmd)
+        {
+            var skyContext = hdCamera.visualSky;
+            if (skyContext.IsValid())
+            {
+                UpdateBuiltinParameters(skyContext,
+                                        hdCamera,
+                                        sunLight,
+                                        colorBuffer,
+                                        depthBuffer,
+                                        debugSettings,
+                                        frameIndex,
+                                        cmd);
+
+                int skyHash = ComputeSkyHash(skyContext, sunLight, SkyAmbientMode.Static);
+                AcquireSkyRenderingContext(skyContext, skyHash);
+                var cachedContext = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId];
+                cachedContext.renderer.DoUpdate(m_BuiltinParameters);
+                if (depthBuffer == BuiltinSkyParameters.nullRT)
+                {
+                    CoreUtils.SetRenderTarget(cmd, depthBuffer);
+                }
+                cachedContext.renderer.PreRenderSky(m_BuiltinParameters, false, hdCamera.camera.cameraType != CameraType.Reflection || skyContext.skySettings.includeSunInBaking.value);
+            }
+        }
+
+        public void RenderSky(HDCamera hdCamera, Light sunLight, RTHandle colorBuffer, RTHandle depthBuffer, DebugDisplaySettings debugSettings, int frameIndex, CommandBuffer cmd)
+        {
+            var skyContext = hdCamera.visualSky;
+            if (skyContext.IsValid() && hdCamera.clearColorMode == HDAdditionalCameraData.ClearColorMode.Sky)
+            {
+                using (new ProfilingSample(cmd, "Sky Pass"))
+                {
+                    UpdateBuiltinParameters(skyContext,
+                                         hdCamera,
+                                         sunLight,
+                                         colorBuffer,
+                                         depthBuffer,
+                                         debugSettings,
+                                         frameIndex,
+                                         cmd);
 
                     SkyAmbientMode ambientMode = VolumeManager.instance.stack.GetComponent<VisualEnvironment>().skyAmbientMode.value;
                     int skyHash = ComputeSkyHash(skyContext, sunLight, ambientMode);

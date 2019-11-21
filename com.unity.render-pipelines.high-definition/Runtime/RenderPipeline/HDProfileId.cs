@@ -71,6 +71,7 @@ namespace UnityEngine.Rendering.HighDefinition
         HDRenderPipelineRenderCamera,
         HDRenderPipelineRenderAOV,
         CullResultsCull,
+        CustomPassCullResultsCull,
         UpdateStencilCopyForSSRExclusion,
         GizmosPrePostprocess,
         Gizmos,
@@ -107,6 +108,14 @@ namespace UnityEngine.Rendering.HighDefinition
         RaytracingIntegrateIndirectDiffuse,
         RaytracingFilterIndirectDiffuse,
         RaytracingDebugOverlay,
+
+        // Profile sampler for prepare light for GPU
+        PrepareLightsForGPU,
+        PushLightDataGlobalParameters,
+
+        // Profile sampler for shadow
+        RenderShadowMaps,
+        PushShadowGlobalParameters,
 
         // Profile sampler for tile pass
         PrepareLightsForGPU,
@@ -161,7 +170,7 @@ namespace UnityEngine.Rendering.HighDefinition
         FinalPost,
         CustomPostProcessBeforePP,
         CustomPostProcessAfterPP,
-        CustomPostProcessBeforeTransparent,
+        CustomPostProcessAfterOpaqueAndSky,
     }
 
     internal static class HDCustomSamplerExtension

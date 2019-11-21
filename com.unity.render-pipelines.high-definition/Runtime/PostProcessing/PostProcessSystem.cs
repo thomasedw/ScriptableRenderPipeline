@@ -2403,14 +2403,14 @@ namespace UnityEngine.Rendering.HighDefinition
 
         #region User Post Processes
 
-        internal void DoUserBeforeTransparent(CommandBuffer cmd, HDCamera camera, RTHandle colorBuffer)
+        internal void DoUserAfterOpaqueAndSky(CommandBuffer cmd, HDCamera camera, RTHandle colorBuffer)
         {
             if (!camera.frameSettings.IsEnabled(FrameSettingsField.CustomPostProcess))
                 return;
 
             RTHandle source = colorBuffer;
 
-            using (new ProfilingScope(cmd, HDProfileId.CustomPostProcessBeforeTransparent.Get()))
+            using (new ProfilingScope(cmd, HDProfileId.CustomPostProcessAfterOpaqueAndSky.Get()))
             {
                 bool needsBlitToColorBuffer = false;
                 foreach (var typeString in HDRenderPipeline.currentAsset.beforeTransparentCustomPostProcesses)

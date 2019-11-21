@@ -68,8 +68,8 @@ namespace UnityEngine.Rendering.HighDefinition
         void InitializeGgxIblSampleData(CommandBuffer cmd)
         {
             m_ComputeGgxIblSampleDataCS.SetTexture(m_ComputeGgxIblSampleDataKernel, "output", m_GgxIblSampleData);
-            cmd.DispatchCompute(m_ComputeGgxIblSampleDataCS, m_ComputeGgxIblSampleDataKernel, 1, 1, 1);
-        }
+                cmd.DispatchCompute(m_ComputeGgxIblSampleDataCS, m_ComputeGgxIblSampleDataKernel, 1, 1, 1);
+            }
 
         public override void Cleanup()
         {
@@ -83,37 +83,37 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             using (new ProfilingScope(cmd, HDProfileId.FilterCubemapGGX.Get()))
             {
-                int mipCount = 1 + (int)Mathf.Log(source.width, 2.0f);
-                if (mipCount < ((int)EnvConstants.SpecCubeLodStep + 1))
-                {
-                    Debug.LogWarning("RenderCubemapGGXConvolution: Cubemap size is too small for GGX convolution, needs at least " + ((int)EnvConstants.SpecCubeLodStep + 1) + " mip levels");
-                    return;
-                }
+            int mipCount = 1 + (int)Mathf.Log(source.width, 2.0f);
+            if (mipCount < ((int)EnvConstants.SpecCubeLodStep + 1))
+            {
+                Debug.LogWarning("RenderCubemapGGXConvolution: Cubemap size is too small for GGX convolution, needs at least " + ((int)EnvConstants.SpecCubeLodStep + 1) + " mip levels");
+                return;
+            }
 
-                // Copy the first mip
+            // Copy the first mip
                 for (int f = 0; f < 6; f++)
                 {
                     cmd.CopyTexture(source, f, 0, target, f, 0);
                 }
 
-                // Solid angle associated with a texel of the cubemap.
-                float invOmegaP = (6.0f * source.width * source.width) / (4.0f * Mathf.PI);
+            // Solid angle associated with a texel of the cubemap.
+            float invOmegaP = (6.0f * source.width * source.width) / (4.0f * Mathf.PI);
 
-                if (!m_GgxIblSampleData.IsCreated())
-                {
-                    m_GgxIblSampleData.Create();
-                    InitializeGgxIblSampleData(cmd);
-                }
+            if (!m_GgxIblSampleData.IsCreated())
+            {
+                m_GgxIblSampleData.Create();
+                InitializeGgxIblSampleData(cmd);
+            }
 
-                m_convolveMaterial.SetTexture("_GgxIblSamples", m_GgxIblSampleData);
+            m_convolveMaterial.SetTexture("_GgxIblSamples", m_GgxIblSampleData);
 
-                var props = new MaterialPropertyBlock();
-                props.SetTexture("_MainTex", source);
-                props.SetFloat("_InvOmegaP", invOmegaP);
+            var props = new MaterialPropertyBlock();
+            props.SetTexture("_MainTex", source);
+            props.SetFloat("_InvOmegaP", invOmegaP);
 
-                for (int mip = 1; mip < ((int)EnvConstants.SpecCubeLodStep + 1); ++mip)
-                {
-                    props.SetFloat("_Level", mip);
+            for (int mip = 1; mip < ((int)EnvConstants.SpecCubeLodStep + 1); ++mip)
+            {
+                props.SetFloat("_Level", mip);
 
                     for (int face = 0; face < 6; ++face)
                     {
@@ -127,7 +127,6 @@ namespace UnityEngine.Rendering.HighDefinition
                     }
                 }
             }
-        }
 
         // Filters MIP map levels (other than 0) with GGX using multiple importance sampling.
         override public void FilterCubemapMIS(CommandBuffer cmd,
@@ -144,8 +143,8 @@ namespace UnityEngine.Rendering.HighDefinition
 
             int numRows = conditionalCdf.height;
 
-            cmd.DispatchCompute(m_BuildProbabilityTablesCS, m_ConditionalDensitiesKernel, numRows, 1, 1);
-            cmd.DispatchCompute(m_BuildProbabilityTablesCS, m_MarginalRowDensitiesKernel, 1, 1, 1);
+                cmd.DispatchCompute(m_BuildProbabilityTablesCS, m_ConditionalDensitiesKernel, numRows, 1, 1);
+                cmd.DispatchCompute(m_BuildProbabilityTablesCS, m_MarginalRowDensitiesKernel, 1, 1, 1);
 
             m_convolveMaterial.EnableKeyword("USE_MIS");
             m_convolveMaterial.SetTexture("_ConditionalDensities", conditionalCdf);

@@ -18,6 +18,8 @@ namespace UnityEditor.Rendering.HighDefinition
         public SerializedProperty spotLightShape;
         public SerializedProperty shapeWidth;
         public SerializedProperty shapeHeight;
+        public SerializedProperty barnDoorAngle;
+        public SerializedProperty barnDoorLength;
         public SerializedProperty aspectRatio;
         public SerializedProperty shapeRadius;
         public SerializedProperty maxSmoothness;
@@ -27,10 +29,10 @@ namespace UnityEditor.Rendering.HighDefinition
         public SerializedProperty displayAreaLightEmissiveMesh;
         public SerializedProperty renderingLayerMask;
         public SerializedProperty shadowNearPlane;
-        public SerializedProperty shadowSoftness;
         public SerializedProperty blockerSampleCount;
         public SerializedProperty filterSampleCount;
         public SerializedProperty minFilterSize;
+        public SerializedProperty scaleForSoftness;
         public SerializedProperty areaLightCookie;   // We can't use default light cookies because the cookie gets reset by some safety measure on C++ side... :/
         public SerializedProperty areaLightShadowCone;
         public SerializedProperty useCustomSpotLightShadowCone;
@@ -72,6 +74,7 @@ namespace UnityEditor.Rendering.HighDefinition
         public SerializedScalableSettingValue contactShadows;
         public SerializedProperty rayTracedContactShadow;
         public SerializedProperty shadowTint;
+        public SerializedProperty penumbraTint;
         public SerializedProperty shadowUpdateMode;
         public SerializedScalableSettingValue shadowResolution;
 
@@ -207,15 +210,17 @@ namespace UnityEditor.Rendering.HighDefinition
                 spotLightShape = o.Find("m_SpotLightShape");
                 shapeWidth = o.Find("m_ShapeWidth");
                 shapeHeight = o.Find("m_ShapeHeight");
+                barnDoorAngle = o.Find("m_BarnDoorAngle");
+                barnDoorLength = o.Find("m_BarnDoorLength");
                 aspectRatio = o.Find("m_AspectRatio");
                 shapeRadius = o.Find("m_ShapeRadius");
                 maxSmoothness = o.Find("m_MaxSmoothness");
                 applyRangeAttenuation = o.Find("m_ApplyRangeAttenuation");
                 shadowNearPlane = o.Find("m_ShadowNearPlane");
-                shadowSoftness = o.Find("m_ShadowSoftness");
                 blockerSampleCount = o.Find("m_BlockerSampleCount");
                 filterSampleCount = o.Find("m_FilterSampleCount");
                 minFilterSize = o.Find("m_MinFilterSize");
+                scaleForSoftness = o.Find("m_SoftnessScale");
                 areaLightCookie = o.Find("m_AreaLightCookie");
                 areaLightShadowCone = o.Find("m_AreaLightShadowCone");
                 useCustomSpotLightShadowCone = o.Find("m_UseCustomSpotLightShadowCone");
@@ -258,6 +263,7 @@ namespace UnityEditor.Rendering.HighDefinition
                 contactShadows = new SerializedScalableSettingValue(o.Find((HDAdditionalLightData l) => l.useContactShadow));
                 rayTracedContactShadow = o.Find("m_RayTracedContactShadow");
                 shadowTint = o.Find("m_ShadowTint");
+                penumbraTint = o.Find("m_PenumbraTint");
                 shadowUpdateMode = o.Find("m_ShadowUpdateMode");
                 shadowResolution = new SerializedScalableSettingValue(o.Find((HDAdditionalLightData l) => l.shadowResolution));
 
