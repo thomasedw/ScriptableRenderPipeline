@@ -5,6 +5,7 @@ using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 using UnityEditorInternal;
+using System.Linq;
 
 namespace UnityEditor.Rendering.HighDefinition
 {
@@ -18,16 +19,17 @@ namespace UnityEditor.Rendering.HighDefinition
             return new SettingsProvider("Project/Quality/HDRP", SettingsScope.Project)
             {
                 activateHandler = s_IMGUIImpl.OnActivate,
-                keywords = new [] { "quality", "hdrp", "motion" },
+                keywords = SettingsProvider.GetSearchKeywordsFromGUIContentProperties<QualitySettingsPanelIMGUI.Styles>()
+                    .Concat(SettingsProvider.GetSearchKeywordsFromGUIContentProperties<HDRenderPipelineUI.Styles>())
+                    .Concat(SettingsProvider.GetSearchKeywordsFromGUIContentProperties<HDRenderPipelineUI.Styles.GeneralSection>())
+                    .ToArray(),
                 guiHandler = s_IMGUIImpl.OnGUI,
             };
         }
 
         class QualitySettingsPanelIMGUI
         {
-            static GUIContent s_CachedGUIContent = new GUIContent();
-
-            public static class Styles
+            public class Styles
             {
                 public const int HDRPAssetListMinHeight = 150;
                 public const int HDRPAssetListMaxHeight = 150;
@@ -35,6 +37,8 @@ namespace UnityEditor.Rendering.HighDefinition
                 public static readonly GUIContent hdrpAssetListTitle = new GUIContent("Active HDRP Assets");
                 public static readonly GUIContent @default = new GUIContent("default");
             }
+
+            static GUIContent s_CachedGUIContent = new GUIContent();
 
             Vector2 m_HDRPAssetListScrollView = Vector2.zero;
             List<HDRPAssetLocations> m_HDRPAssets = new List<HDRPAssetLocations>();

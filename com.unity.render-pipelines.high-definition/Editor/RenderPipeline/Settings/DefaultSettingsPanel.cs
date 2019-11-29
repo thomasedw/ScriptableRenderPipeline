@@ -5,6 +5,7 @@ using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 using UnityEditorInternal;
+using System.Linq;
 
 namespace UnityEditor.Rendering.HighDefinition
 {
@@ -18,14 +19,15 @@ namespace UnityEditor.Rendering.HighDefinition
             return new SettingsProvider("Project/HDRP Default Settings", SettingsScope.Project)
             {
                 activateHandler = s_IMGUIImpl.OnActivate,
-                keywords = new [] { "default", "hdrp", "render", "deferred", "quality" },
+                keywords = SettingsProvider.GetSearchKeywordsFromGUIContentProperties<HDRenderPipelineUI.Styles.GeneralSection>()
+                    .Concat(SettingsProvider.GetSearchKeywordsFromGUIContentProperties<DefaultSettingsPanelIMGUI.Styles>()).ToArray(),
                 guiHandler = s_IMGUIImpl.OnGUI,
             };
         }
 
         class DefaultSettingsPanelIMGUI
         {
-            public static class Styles
+            public class Styles
             {
                 public const int labelWidth = 220;
                 public static GUIContent defaultHDRPAsset = new GUIContent("Asset with the default settings");
