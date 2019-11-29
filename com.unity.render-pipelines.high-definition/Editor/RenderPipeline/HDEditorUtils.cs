@@ -253,8 +253,14 @@ namespace UnityEditor.Rendering.HighDefinition
         }
     }
 
-    internal static partial class SerializedPropertyExtention
+    internal static partial class SerializedPropertyExtension
     {
+        public static IEnumerable<string> EnumerateDisplayName(this SerializedProperty property)
+        {
+            while (property.NextVisible(true))
+                yield return property.displayName;
+        }
+
         /// <summary>
         /// Helper to get an enum value from a SerializedProperty.
         /// This handle case where index do not correspond to enum value.
