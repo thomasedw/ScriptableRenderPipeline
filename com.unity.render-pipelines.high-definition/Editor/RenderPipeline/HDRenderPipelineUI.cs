@@ -173,22 +173,22 @@ namespace UnityEditor.Rendering.HighDefinition
 
         static void Drawer_SectionGeneral(SerializedHDRenderPipelineAsset serialized, Editor owner)
         {
-            EditorGUILayout.PropertyField(serialized.renderPipelineResources, Styles.renderPipelineResourcesContent);
+            EditorGUILayout.PropertyField(serialized.renderPipelineResources, Styles.GeneralSection.renderPipelineResourcesContent);
 
             HDRenderPipeline hdrp = (RenderPipelineManager.currentPipeline as HDRenderPipeline);
             if (hdrp != null && hdrp.rayTracingSupported)
-            EditorGUILayout.PropertyField(serialized.renderPipelineRayTracingResources, Styles.renderPipelineRayTracingResourcesContent);
+            EditorGUILayout.PropertyField(serialized.renderPipelineRayTracingResources, Styles.GeneralSection.renderPipelineRayTracingResourcesContent);
 
             // Not serialized as editor only datas... Retrieve them in data
             EditorGUI.showMixedValue = serialized.editorResourceHasMultipleDifferentValues;
             EditorGUI.BeginChangeCheck();
-            var editorResources = EditorGUILayout.ObjectField(Styles.renderPipelineEditorResourcesContent, serialized.firstEditorResources, typeof(HDRenderPipelineEditorResources), allowSceneObjects: false) as HDRenderPipelineEditorResources;
+            var editorResources = EditorGUILayout.ObjectField(Styles.GeneralSection.renderPipelineEditorResourcesContent, serialized.firstEditorResources, typeof(HDRenderPipelineEditorResources), allowSceneObjects: false) as HDRenderPipelineEditorResources;
             if (EditorGUI.EndChangeCheck())
                 serialized.SetEditorResource(editorResources);
             EditorGUI.showMixedValue = false;
 
             //EditorGUILayout.PropertyField(serialized.enableSRPBatcher, k_SRPBatcher);
-            EditorGUILayout.PropertyField(serialized.shaderVariantLogLevel, Styles.shaderVariantLogLevel);
+            EditorGUILayout.PropertyField(serialized.shaderVariantLogLevel, Styles.GeneralSection.shaderVariantLogLevel);
         }
 
         static void Drawer_SectionLightLayers(SerializedHDRenderPipelineAsset serialized, Editor owner)
