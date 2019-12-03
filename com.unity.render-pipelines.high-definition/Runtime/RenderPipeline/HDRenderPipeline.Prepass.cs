@@ -493,7 +493,7 @@ namespace UnityEngine.Rendering.HighDefinition
             bool isMSAAEnabled = hdCamera.frameSettings.IsEnabled(FrameSettingsField.MSAA);
             if (isMSAAEnabled)
             {
-                using (var builder = renderGraph.AddRenderPass<ResolveStencilPassData>("Resolve Stencil", out var passData, CustomSamplerId.ResolveStencilBuffer.GetSampler()))
+                using (var builder = renderGraph.AddRenderPass<ResolveStencilPassData>("Resolve Stencil", out var passData, HDProfileId.ResolveStencilBuffer.Get()))
                 {
                     passData.inputDepth = output.depthBuffer;
                     passData.outputStencil = builder.WriteTexture(renderGraph.CreateTexture(new TextureDesc(Vector2.one, true, true) { colorFormat = GraphicsFormat.R8G8_UInt, name = "StencilBufferResolved" }));
