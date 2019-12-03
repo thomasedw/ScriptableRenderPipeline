@@ -127,7 +127,7 @@ namespace UnityEngine.Rendering
     }
 
     /// <summary>
-    /// Scoped Profiling makers
+    /// Scoped Profiling markers
     /// </summary>
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
     public struct ProfilingScope : IDisposable
