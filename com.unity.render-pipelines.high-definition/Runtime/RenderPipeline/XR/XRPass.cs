@@ -277,7 +277,7 @@ namespace UnityEngine.Rendering.HighDefinition
             // Callback for custom mirror view
             if (customMirrorView != null)
             {
-                using (new ProfilingScope(cmd, HDProfileId.XRCustomMirrorView.Get()))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.XRCustomMirrorView)))
                 {
                     customMirrorView(this, cmd, hdCamera.camera.targetTexture, hdCamera.camera.pixelRect);
                 }
@@ -288,7 +288,7 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             if (enabled && xrSdkEnabled && occlusionMeshMaterial != null)
             {
-                using (new ProfilingScope(cmd, HDProfileId.XROcclusionMesh.Get()))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.XROcclusionMesh)))
                 {
                     Matrix4x4 m = Matrix4x4.Ortho(0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f);
 

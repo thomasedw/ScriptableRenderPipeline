@@ -175,12 +175,4 @@ namespace UnityEngine.Rendering.HighDefinition
         CustomPostProcessAfterPP,
         CustomPostProcessAfterOpaqueAndSky,
     }
-
-    internal static class HDRPProfilingSamplerExtension
-    {
-        public static ProfilingSampler Get(this HDProfileId samplerId)
-        {
-            return ProfileSamplerList<HDProfileId>.Get(samplerId);
-        }
-    }
 }

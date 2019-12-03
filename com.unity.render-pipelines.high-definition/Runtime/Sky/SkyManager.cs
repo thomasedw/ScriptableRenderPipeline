@@ -443,7 +443,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         void RenderSkyToCubemap(SkyUpdateContext skyContext)
         {
-            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, HDProfileId.RenderSkyToCubemap.Get()))
+            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, ProfilingSampler.Get(HDProfileId.RenderSkyToCubemap)))
             {
             var renderingContext = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderingContext;
             var renderer = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderer;
@@ -467,7 +467,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         void RenderCubemapGGXConvolution(SkyUpdateContext skyContext)
         {
-            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, HDProfileId.UpdateSkyEnvironmentConvolution.Get()))
+            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, ProfilingSampler.Get(HDProfileId.UpdateSkyEnvironmentConvolution)))
             {
                 var renderingContext = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderingContext;
                 var renderer = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId].renderer;
@@ -674,13 +674,13 @@ namespace UnityEngine.Rendering.HighDefinition
                     (skyContext.skySettings.updateMode.value == EnvironmentUpdateMode.OnChanged && skyHash != skyContext.skyParametersHash) ||
                     (skyContext.skySettings.updateMode.value == EnvironmentUpdateMode.Realtime && skyContext.currentUpdateTime > skyContext.skySettings.updatePeriod.value))
                 {
-                    using (new ProfilingScope(cmd, HDProfileId.UpdateSkyEnvironment.Get()))
+                    using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.UpdateSkyEnvironment)))
                     {
                             RenderSkyToCubemap(skyContext);
 
                             if (updateAmbientProbe)
                             {
-                            using (new ProfilingScope(cmd, HDProfileId.UpdateSkyAmbientProbe.Get()))
+                            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.UpdateSkyAmbientProbe)))
                                 {
                                     cmd.SetComputeBufferParam(m_ComputeAmbientProbeCS, m_ComputeAmbientProbeKernel, m_AmbientProbeOutputBufferParam, renderingContext.ambientProbeResult);
                                     cmd.SetComputeTextureParam(m_ComputeAmbientProbeCS, m_ComputeAmbientProbeKernel, m_AmbientProbeInputCubemap, renderingContext.skyboxCubemapRT);
@@ -806,7 +806,7 @@ namespace UnityEngine.Rendering.HighDefinition
             var skyContext = hdCamera.visualSky;
             if (skyContext.IsValid() && hdCamera.clearColorMode == HDAdditionalCameraData.ClearColorMode.Sky)
             {
-                using (new ProfilingScope(cmd, HDProfileId.RenderSky.Get()))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderSky)))
                 {
                     UpdateBuiltinParameters(skyContext,
                                          hdCamera,
@@ -850,7 +850,7 @@ namespace UnityEngine.Rendering.HighDefinition
                                                       RTHandle depthBuffer,
                                                       Matrix4x4 pixelCoordToViewDirWS, bool isMSAA)
         {
-            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, HDProfileId.OpaqueAtmosphericScattering.Get()))
+            using (new ProfilingScope(m_BuiltinParameters.commandBuffer, ProfilingSampler.Get(HDProfileId.OpaqueAtmosphericScattering)))
             {
                 m_OpaqueAtmScatteringBlock.SetMatrix(HDShaderIDs._PixelCoordToViewDirWS, pixelCoordToViewDirWS);
                 if (isMSAA)

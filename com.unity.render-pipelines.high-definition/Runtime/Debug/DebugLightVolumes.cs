@@ -234,7 +234,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         public void RenderLightVolumes(CommandBuffer cmd, HDCamera hdCamera, CullingResults cullResults, LightingDebugSettings lightDebugSettings, RTHandle finalRT)
         {
-            using (new ProfilingScope(cmd, HDProfileId.DisplayLightVolume.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.DisplayLightVolume)))
             {
                 // Clear the buffers
                 CoreUtils.SetRenderTarget(cmd, m_ColorAccumulationBuffer, ClearFlag.Color, Color.black);

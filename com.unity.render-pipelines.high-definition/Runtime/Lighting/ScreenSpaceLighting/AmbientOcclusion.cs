@@ -492,7 +492,7 @@ namespace UnityEngine.Rendering.HighDefinition
             var settings = VolumeManager.instance.stack.GetComponent<AmbientOcclusion>();
             if (IsActive(camera, settings))
             {
-                using (new ProfilingScope(cmd, HDProfileId.RenderSSAO.Get()))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderSSAO)))
                 {
                     EnsureRTSize(settings, camera);
 
@@ -500,12 +500,12 @@ namespace UnityEngine.Rendering.HighDefinition
                     var historyOutput = camera.GetPreviousFrameRT((int)HDCameraFrameHistoryType.AmbientOcclusion);
 
                     var aoParameters = PrepareRenderAOParameters(camera, RTHandles.rtHandleProperties, frameCount);
-                    using (new ProfilingScope(cmd, HDProfileId.HorizonSSAO.Get()))
+                    using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.HorizonSSAO)))
                     {
                         RenderAO(aoParameters, m_PackedDataTex, m_Resources, cmd);
                     }
 
-                    using (new ProfilingScope(cmd, HDProfileId.DenoiseSSAO.Get()))
+                    using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.DenoiseSSAO)))
                     {
                         var output = m_RunningFullRes ? m_AmbientOcclusionTex : m_FinalHalfRes;
                         DenoiseAO(aoParameters, m_PackedDataTex, m_PackedDataBlurred, currentHistory, historyOutput, output, cmd);
@@ -513,7 +513,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
                     if (!m_RunningFullRes)
                     {
-                        using (new ProfilingScope(cmd, HDProfileId.UpSampleSSAO.Get()))
+                        using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.UpSampleSSAO)))
                         {
                             UpsampleAO(aoParameters, settings.temporalAccumulation.value ? m_FinalHalfRes : m_PackedDataTex, m_AmbientOcclusionTex, cmd);
                         }

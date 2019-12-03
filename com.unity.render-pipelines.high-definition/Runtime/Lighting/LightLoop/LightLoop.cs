@@ -1130,8 +1130,8 @@ namespace UnityEngine.Rendering.HighDefinition
             lightData.shadowDimmer           = additionalLightData.shadowDimmer;
             lightData.volumetricShadowDimmer = additionalLightData.volumetricShadowDimmer;
             GetContactShadowMask(additionalLightData, HDAdditionalLightData.ScalableSettings.UseContactShadow(m_Asset), hdCamera, ref lightData.contactShadowMask,ref lightData.isRayTracedContactShadow);
-            
-            // We want to have a colored penumbra if the flag is on and the color is not gray            
+
+            // We want to have a colored penumbra if the flag is on and the color is not gray
             bool penumbraTint = additionalLightData.penumbraTint && ((additionalLightData.shadowTint.r != additionalLightData.shadowTint.g) || (additionalLightData.shadowTint.g != additionalLightData.shadowTint.b));
             lightData.penumbraTint = penumbraTint ? 1.0f : 0.0f;
             if (penumbraTint)
@@ -1404,14 +1404,14 @@ namespace UnityEngine.Rendering.HighDefinition
             else if (lightData.lightType == GPULightType.Rectangle && additionalLightData.areaLightCookie != null)
             {
                 lightData.cookieIndex = m_TextureCaches.areaLightCookieManager.FetchSlice(cmd, additionalLightData.areaLightCookie);
-            } 
+            }
 
             float shadowDistanceFade         = HDUtils.ComputeLinearDistanceFade(distanceToCamera, Mathf.Min(shadowSettings.maxShadowDistance.value, additionalLightData.shadowFadeDistance));
             lightData.shadowDimmer           = shadowDistanceFade * additionalLightData.shadowDimmer;
             lightData.volumetricShadowDimmer = shadowDistanceFade * additionalLightData.volumetricShadowDimmer;
             GetContactShadowMask(additionalLightData, HDAdditionalLightData.ScalableSettings.UseContactShadow(m_Asset), hdCamera, ref lightData.contactShadowMask, ref lightData.isRayTracedContactShadow);
 
-            // We want to have a colored penumbra if the flag is on and the color is not gray            
+            // We want to have a colored penumbra if the flag is on and the color is not gray
             bool penumbraTint = additionalLightData.penumbraTint && ((additionalLightData.shadowTint.r != additionalLightData.shadowTint.g) || (additionalLightData.shadowTint.g != additionalLightData.shadowTint.b));
             lightData.penumbraTint = penumbraTint ? 1.0f : 0.0f;
             if (penumbraTint)
@@ -2002,7 +2002,7 @@ namespace UnityEngine.Rendering.HighDefinition
             var debugLightFilter = debugDisplaySettings.GetDebugLightFilterMode();
             var hasDebugLightFilter = debugLightFilter != DebugLightFilterMode.None;
 
-            using (new ProfilingScope(cmd, HDProfileId.PrepareLightsForGPU.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.PrepareLightsForGPU)))
             {
                 Camera camera = hdCamera.camera;
 
@@ -2081,7 +2081,7 @@ namespace UnityEngine.Rendering.HighDefinition
                         LightCategory lightCategory = LightCategory.Count;
                         GPULightType gpuLightType = GPULightType.Point;
                         LightVolumeType lightVolumeType = LightVolumeType.Count;
-                        HDRenderPipeline.EvaluateGPULightType(lightType, additionalData.spotLightShape, additionalData.areaLightShape, 
+                        HDRenderPipeline.EvaluateGPULightType(lightType, additionalData.spotLightShape, additionalData.areaLightShape,
                                                                 ref lightCategory, ref gpuLightType, ref lightVolumeType);
 
                         // Do NOT process lights beyond the specified limit!
@@ -2918,7 +2918,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         void BuildGPULightListsCommon(HDCamera hdCamera, CommandBuffer cmd)
         {
-            using (new ProfilingScope(cmd, HDProfileId.BuildLightList.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.BuildLightList)))
             {
                 var parameters = PrepareBuildGPULightListParameters(hdCamera);
                 var resources = PrepareBuildGPULightListResources(
@@ -3031,7 +3031,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         static void PushLightDataGlobalParams(in LightDataGlobalParameters param, CommandBuffer cmd)
         {
-            using (new ProfilingScope(cmd, HDProfileId.PushLightDataGlobalParameters.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.PushLightDataGlobalParameters)))
             {
                 Camera camera = param.hdCamera.camera;
 
@@ -3068,7 +3068,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         static void PushShadowGlobalParams(in ShadowGlobalParameters param, CommandBuffer cmd)
         {
-            using (new ProfilingScope(cmd, HDProfileId.PushShadowGlobalParameters.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.PushShadowGlobalParameters)))
             {
                 Camera camera = param.hdCamera.camera;
 
@@ -3081,7 +3081,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         static void PushLightLoopGlobalParams(in LightLoopGlobalParameters param, CommandBuffer cmd)
         {
-            using (new ProfilingScope(cmd, HDProfileId.PushGlobalParameters.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.PushGlobalParameters)))
             {
                 Camera camera = param.hdCamera.camera;
 
@@ -3274,7 +3274,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (!WillRenderContactShadow())
                 return;
 
-            using (new ProfilingScope(cmd, HDProfileId.ContactShadows.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.ContactShadows)))
             {
                 m_ShadowManager.BindResources(cmd);
 
@@ -3389,7 +3389,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         static void RenderComputeDeferredLighting(in DeferredLightingParameters parameters, in DeferredLightingResources resources, CommandBuffer cmd)
         {
-            using (new ProfilingScope(cmd, HDProfileId.RenderDeferredLightingCompute.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderDeferredLightingCompute)))
             {
                 cmd.SetGlobalBuffer(HDShaderIDs.g_vLightListGlobal, resources.lightListBuffer);
 
@@ -3474,7 +3474,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         static void RenderComputeAsPixelDeferredLighting(in DeferredLightingParameters parameters, in DeferredLightingResources resources, CommandBuffer cmd)
         {
-            using (new ProfilingScope(cmd, HDProfileId.RenderDeferredLightingComputeAsPixel.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderDeferredLightingComputeAsPixel)))
             {
                 cmd.SetGlobalBuffer(HDShaderIDs.g_vLightListGlobal, resources.lightListBuffer);
 
@@ -3503,13 +3503,13 @@ namespace UnityEngine.Rendering.HighDefinition
             // First, render split lighting.
             if (parameters.outputSplitLighting)
             {
-                using (new ProfilingScope(cmd, HDProfileId.RenderDeferredLightingSinglePassMRT.Get()))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderDeferredLightingSinglePassMRT)))
                 {
                     CoreUtils.DrawFullScreen(cmd, parameters.splitLightingMat, resources.colorBuffers, resources.depthStencilBuffer);
                 }
             }
 
-            using (new ProfilingScope(cmd, HDProfileId.RenderDeferredLightingSinglePass.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderDeferredLightingSinglePass)))
             {
                 var currentLightingMaterial = parameters.regularLightingMat;
                 // If SSS is disable, do lighting for both split lighting and no split lighting
@@ -3575,14 +3575,14 @@ namespace UnityEngine.Rendering.HighDefinition
             if (GetFeatureVariantsEnabled(hdCamera.frameSettings) || hdCamera.frameSettings.IsEnabled(FrameSettingsField.SSR))
             {
                 // For material classification we use compute shader and so can't read into the stencil, so prepare it.
-                using (new ProfilingScope(cmd, HDProfileId.ClearAndCopyStencilTexture.Get()))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.ClearAndCopyStencilTexture)))
                 {
                     CopyStencilBufferForMaterialClassification(cmd, depthStencilBuffer, stencilBufferCopy, copyStencil);
                 }
 
                 if (hdCamera.frameSettings.IsEnabled(FrameSettingsField.SSR))
                 {
-                    using (new ProfilingScope(cmd, HDProfileId.UpdateStencilCopyForSSRExclusion.Get()))
+                    using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.UpdateStencilCopyForSSRExclusion)))
                     {
                         UpdateStencilBufferForSSRExclusion(cmd, depthStencilBuffer, stencilBufferCopy, copyStencilForSSR);
                     }
@@ -3619,7 +3619,7 @@ namespace UnityEngine.Rendering.HighDefinition
             LightingDebugSettings lightingDebug = debugParameters.debugDisplaySettings.data.lightingDebugSettings;
             if (lightingDebug.tileClusterDebug != TileClusterDebug.None)
             {
-                using (new ProfilingScope(cmd, HDProfileId.TileClusterLightingDebug.Get()))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.TileClusterLightingDebug)))
                 {
                     var hdCamera = debugParameters.hdCamera;
                     var parameters = debugParameters.lightingOverlayParameters;
@@ -3679,7 +3679,7 @@ namespace UnityEngine.Rendering.HighDefinition
             LightingDebugSettings lightingDebug = debugParameters.debugDisplaySettings.data.lightingDebugSettings;
             if (lightingDebug.shadowDebugMode != ShadowMapDebugMode.None)
             {
-                using (new ProfilingScope(cmd, HDProfileId.DisplayShadows.Get()))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.DisplayShadows)))
                 {
                     var hdCamera = debugParameters.hdCamera;
                     var parameters = debugParameters.lightingOverlayParameters;

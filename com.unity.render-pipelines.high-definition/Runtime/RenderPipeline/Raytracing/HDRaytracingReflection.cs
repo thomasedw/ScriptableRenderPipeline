@@ -179,7 +179,7 @@ namespace UnityEngine.Rendering.HighDefinition
             int currentKernel = 0;
             RenderTargetIdentifier clearCoatMaskTexture;
 
-            using (new ProfilingScope(cmd, HDProfileId.RaytracingIntegrateReflection.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingIntegrateReflection)))
             {
                 if (settings.deferredMode.value)
                 {
@@ -280,7 +280,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 cmd.DispatchCompute(reflectionFilter, currentKernel, numTilesXHR, numTilesYHR, hdCamera.viewCount);
             }
 
-            using (new ProfilingScope(cmd, HDProfileId.RaytracingFilterReflection.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingFilterReflection)))
             {
                 if (settings.denoise.value)
                 {
@@ -309,7 +309,7 @@ namespace UnityEngine.Rendering.HighDefinition
             LightCluster lightClusterSettings = VolumeManager.instance.stack.GetComponent<LightCluster>();
             RayTracingSettings rtSettings = VolumeManager.instance.stack.GetComponent<RayTracingSettings>();
 
-            using (new ProfilingScope(cmd, HDProfileId.RaytracingIntegrateReflection.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingIntegrateReflection)))
             {
                 // Bind all the required data for ray tracing
                 BindRayTracedReflectionData(cmd, hdCamera, reflectionShader, settings, lightClusterSettings, rtSettings, intermediateBuffer0, intermediateBuffer1);
@@ -327,7 +327,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 CoreUtils.SetKeyword(cmd, "MULTI_BOUNCE_INDIRECT", false);
             }
 
-            using (new ProfilingScope(cmd, HDProfileId.RaytracingFilterReflection.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingFilterReflection)))
             {
                 if (settings.denoise.value)
                 {

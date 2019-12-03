@@ -1,25 +1,71 @@
-//#define ENABLE_GPU_PROFILER
+// TProfilingSampler<TEnum>.samples should just be an array. Unfortunately, Enum cannot be converted to int without generating garbage.
+// This could be worked around by using Unsafe but it's not available at the moment.
+// So in the meantime we use a Dictionnary with a perf hit...
+//#define USE_UNSAFE
 
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine.Profiling;
-
 
 namespace UnityEngine.Rendering
 {
+    class TProfilingSampler<TEnum> : ProfilingSampler where TEnum : Enum
+    {
+#if USE_UNSAFE
+        internal static TProfilingSampler<TEnum>[] samples;
+#else
+        internal static Dictionary<TEnum, TProfilingSampler<TEnum>> samples = new Dictionary<TEnum, TProfilingSampler<TEnum>>();
+#endif
+        static TProfilingSampler()
+        {
+            var names = Enum.GetNames(typeof(TEnum));
+#if USE_UNSAFE
+            var values = Enum.GetValues(typeof(TEnum)).Cast<int>().ToArray();
+            samples = new TProfilingSampler<TEnum>[values.Max() + 1];
+#else
+            var values = Enum.GetValues(typeof(TEnum));
+#endif
+
+            for (int i = 0; i < names.Length; i++)
+            {
+                var sample = new TProfilingSampler<TEnum>(names[i]);
+#if USE_UNSAFE
+                samples[values[i]] = sample;
+#else
+                samples.Add((TEnum)values.GetValue(i), sample);
+#endif
+            }
+        }
+
+        public TProfilingSampler(string name)
+            : base(name)
+        {
+        }
+    }
+
     /// <summary>
     /// Wrapper around CPU and GPU profiling samplers.
     /// Use this along ProfilingScope to profile a piece of code.
     /// </summary>
     public class ProfilingSampler
     {
+        public static ProfilingSampler Get<TEnum>(TEnum marker)
+            where TEnum : Enum
+        {
+#if USE_UNSAFE
+            return TProfilingSampler<TEnum>.samples[Unsafe.As<TEnum, int>(ref marker)];
+#else
+            TProfilingSampler<TEnum>.samples.TryGetValue(marker, out var sampler);
+            return sampler;
+#endif
+        }
+
         public ProfilingSampler(string name)
         {
-#if ENABLE_GPU_PROFILER
             sampler = CustomSampler.Create(name, true); // Event markers, command buffer CPU profiling and GPU profiling
-#else
-            sampler = CustomSampler.Create(name); // Event markers, command buffer CPU profiling and GPU profiling
-#endif
             inlineSampler = CustomSampler.Create($"Inl_{name}"); // Profiles code "immediately"
+            this.name = name;
 
             m_Recorder = sampler.GetRecorder();
             m_Recorder.enabled = false;
@@ -27,10 +73,11 @@ namespace UnityEngine.Rendering
             m_InlineRecorder.enabled = false;
         }
 
-        public bool IsValid() { return (sampler != null && inlineSampler != null); }
+        internal bool IsValid() { return (sampler != null && inlineSampler != null); }
 
         internal CustomSampler sampler { get; private set; }
         internal CustomSampler inlineSampler { get; private set; }
+        public string name { get; private set; }
 
         Recorder m_Recorder;
         Recorder m_InlineRecorder;
@@ -44,56 +91,24 @@ namespace UnityEngine.Rendering
             }
         }
 
-        public string name => sampler.name;
-#if ENABLE_GPU_PROFILER
         public float gpuElapsedTime => m_Recorder.enabled ? m_Recorder.gpuElapsedNanoseconds / 1000000.0f : 0.0f;
         public int gpuSampleCount => m_Recorder.enabled ? m_Recorder.gpuSampleBlockCount : 0;
-#else
-        public float gpuElapsedTime => 0.0f;
-        public int gpuSampleCount => 0;
-#endif
         public float cpuElapsedTime => m_Recorder.enabled ? m_Recorder.elapsedNanoseconds / 1000000.0f : 0.0f;
         public int cpuSampleCount => m_Recorder.enabled ? m_Recorder.sampleBlockCount : 0;
         public float inlineCpuElapsedTime => m_InlineRecorder.enabled ? m_InlineRecorder.elapsedNanoseconds / 1000000.0f : 0.0f;
         public int inlineCpuSampleCount => m_InlineRecorder.enabled ? m_InlineRecorder.sampleBlockCount : 0;
-    }
 
-    /// <summary>
-    /// Helper class to manage profiling samplers referenced by an Id derived from an enumeration
-    /// </summary>
-    /// <typeparam name="ProfilingSamplerId"></typeparam>
-    public class ProfileSamplerList<ProfilingSamplerId> where ProfilingSamplerId : Enum
-    {
-        static ProfilingSampler[] s_Samplers = null;
-
-        static public ProfilingSampler Get(ProfilingSamplerId samplerId)
-        {
-            if (s_Samplers == null)
-            {
-                int max = 0;
-                foreach (var value in Enum.GetValues(typeof(ProfilingSamplerId)))
-                {
-                    max = Math.Max(max, (int)value);
-                }
-                s_Samplers = new ProfilingSampler[max + 1];
-            }
-
-            int index = (int)(object)samplerId;
-            var sampler = s_Samplers[index];
-            if (sampler == null || !sampler.IsValid())
-            {
-                s_Samplers[index] = new ProfilingSampler(samplerId.ToString());
-            }
-
-            return s_Samplers[index];
-        }
+        // Keep the constructor private
+        ProfilingSampler() { }
     }
 
     /// <summary>
     /// Scoped Profiling makers
     /// </summary>
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
     public struct ProfilingScope : IDisposable
     {
+        string          m_Name;
         CommandBuffer   m_Cmd;
         bool            m_Disposed;
         CustomSampler   m_Sampler;
@@ -101,18 +116,14 @@ namespace UnityEngine.Rendering
 
         public ProfilingScope(CommandBuffer cmd, ProfilingSampler sampler)
         {
+            m_Name = sampler.name; // Don't use CustomSampler.name because it causes garbage
             m_Cmd = cmd;
             m_Disposed = false;
             m_Sampler = sampler.sampler;
             m_InlineSampler = sampler.inlineSampler;
 
-#if ENABLE_GPU_PROFILER
             if (cmd != null)
                 cmd.BeginSample(m_Sampler);
-#else
-            if (cmd != null)
-                cmd.BeginSample(m_Sampler.name);
-#endif
             m_InlineSampler?.Begin();
         }
 
@@ -132,21 +143,30 @@ namespace UnityEngine.Rendering
             // this but will generate garbage on every frame (and this struct is used quite a lot).
             if (disposing)
             {
-#if ENABLE_GPU_PROFILER
                 if (m_Cmd != null)
                     m_Cmd.EndSample(m_Sampler);
-#else
-                if (m_Cmd != null)
-                    m_Cmd.EndSample(m_Sampler.name);
-#endif
                 m_InlineSampler?.End();
             }
 
             m_Disposed = true;
         }
-    }
+}
+#else
+    public struct ProfilingScope : IDisposable
+    {
+        public ProfilingScope(CommandBuffer cmd, ProfilingSampler sampler)
+        {
 
-    [System.Obsolete("Please use ProfilingScope")]
+        }
+
+        public void Dispose()
+        {
+        }
+    }
+#endif
+
+
+        [System.Obsolete("Please use ProfilingScope")]
     public struct ProfilingSample : IDisposable
     {
         readonly CommandBuffer m_Cmd;

@@ -96,7 +96,7 @@ namespace UnityEngine.Rendering.HighDefinition
             float intensity, phi, backplatePhi;
             GetParameters(out intensity, out phi, out backplatePhi, builtinParams, hdriSky);
 
-            using (new ProfilingScope(builtinParams.commandBuffer, HDProfileId.PreRenderSky.Get()))
+            using (new ProfilingScope(builtinParams.commandBuffer, ProfilingSampler.Get(HDProfileId.PreRenderSky)))
             {
                 m_SkyHDRIMaterial.SetTexture(HDShaderIDs._Cubemap, hdriSky.hdriSky.value);
                 m_SkyHDRIMaterial.SetVector(HDShaderIDs._SkyParam, new Vector4(intensity, 0.0f, Mathf.Cos(phi), Mathf.Sin(phi)));

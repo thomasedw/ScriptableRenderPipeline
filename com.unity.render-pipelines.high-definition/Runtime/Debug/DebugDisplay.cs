@@ -390,21 +390,21 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             Debug.Assert(m_RecordedSamplers.Count == 0);
 
-            m_RecordedSamplers.Add(HDProfileId.HDRenderPipelineRenderCamera.Get());
-            m_RecordedSamplers.Add(HDProfileId.VolumeUpdate.Get());
-            m_RecordedSamplers.Add(HDProfileId.ClearBuffers.Get());
-            m_RecordedSamplers.Add(HDProfileId.RenderShadowMaps.Get());
-            m_RecordedSamplers.Add(HDProfileId.GBuffer.Get());
-            m_RecordedSamplers.Add(HDProfileId.PrepareLightsForGPU.Get());
-            m_RecordedSamplers.Add(HDProfileId.VolumeVoxelization.Get());
-            m_RecordedSamplers.Add(HDProfileId.VolumetricLighting.Get());
-            m_RecordedSamplers.Add(HDProfileId.RenderDeferredLightingCompute.Get());
-            m_RecordedSamplers.Add(HDProfileId.ForwardOpaque.Get());
-            m_RecordedSamplers.Add(HDProfileId.ForwardTransparent.Get());
-            m_RecordedSamplers.Add(HDProfileId.ForwardPreRefraction.Get());
-            m_RecordedSamplers.Add(HDProfileId.ColorPyramid.Get());
-            m_RecordedSamplers.Add(HDProfileId.DepthPyramid.Get());
-            m_RecordedSamplers.Add(HDProfileId.PostProcessing.Get());
+            m_RecordedSamplers.Add(ProfilingSampler.Get(HDProfileId.HDRenderPipelineRenderCamera));
+            m_RecordedSamplers.Add(ProfilingSampler.Get(HDProfileId.VolumeUpdate));
+            m_RecordedSamplers.Add(ProfilingSampler.Get(HDProfileId.ClearBuffers));
+            m_RecordedSamplers.Add(ProfilingSampler.Get(HDProfileId.RenderShadowMaps));
+            m_RecordedSamplers.Add(ProfilingSampler.Get(HDProfileId.GBuffer));
+            m_RecordedSamplers.Add(ProfilingSampler.Get(HDProfileId.PrepareLightsForGPU));
+            m_RecordedSamplers.Add(ProfilingSampler.Get(HDProfileId.VolumeVoxelization));
+            m_RecordedSamplers.Add(ProfilingSampler.Get(HDProfileId.VolumetricLighting));
+            m_RecordedSamplers.Add(ProfilingSampler.Get(HDProfileId.RenderDeferredLightingCompute));
+            m_RecordedSamplers.Add(ProfilingSampler.Get(HDProfileId.ForwardOpaque));
+            m_RecordedSamplers.Add(ProfilingSampler.Get(HDProfileId.ForwardTransparent));
+            m_RecordedSamplers.Add(ProfilingSampler.Get(HDProfileId.ForwardPreRefraction));
+            m_RecordedSamplers.Add(ProfilingSampler.Get(HDProfileId.ColorPyramid));
+            m_RecordedSamplers.Add(ProfilingSampler.Get(HDProfileId.DepthPyramid));
+            m_RecordedSamplers.Add(ProfilingSampler.Get(HDProfileId.PostProcessing));
         }
 
         void DisableProfilingRecorders()

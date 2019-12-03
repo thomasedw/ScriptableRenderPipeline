@@ -37,7 +37,7 @@ namespace UnityEngine.Rendering.HighDefinition
             Texture source, RenderTexture target,
             Matrix4x4[] worldToViewMatrices)
         {
-            using (new ProfilingScope(cmd, HDProfileId.FilterCubemapCharlie.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.FilterCubemapCharlie)))
             {
                 int mipCount = 1 + (int)Mathf.Log(source.width, 2.0f);
                 if (mipCount < ((int)EnvConstants.SpecCubeLodStep + 1))

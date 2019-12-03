@@ -1109,7 +1109,7 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             if (debugDisplaySettings.data.decalsDebugSettings.displayAtlas)
             {
-                using (new ProfilingScope(cmd, HDProfileId.DisplayDebugDecalsAtlas.Get()))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.DisplayDebugDecalsAtlas)))
                 {
                     cmd.SetViewport(new Rect(x, y, overlaySize, overlaySize));
                     HDUtils.BlitQuad(cmd, Atlas.AtlasTexture, new Vector4(1, 1, 0, 0), new Vector4(1, 1, 0, 0), (int)debugDisplaySettings.data.decalsDebugSettings.mipLevel, true);

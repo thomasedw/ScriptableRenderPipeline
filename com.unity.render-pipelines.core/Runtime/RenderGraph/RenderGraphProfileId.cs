@@ -7,12 +7,4 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
         RenderGraphClear,
         RenderGraphClearDebug,
     }
-
-    internal static class RenderGraphProfilingSamplerExtension
-    {
-        public static ProfilingSampler Get(this RenderGraphProfileId samplerId)
-        {
-            return ProfileSamplerList<RenderGraphProfileId>.Get(samplerId);
-        }
-    }
 }

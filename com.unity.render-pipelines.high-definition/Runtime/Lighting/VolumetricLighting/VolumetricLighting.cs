@@ -504,7 +504,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (!Fog.IsVolumetricLightingEnabled(hdCamera))
                 return densityVolumes;
 
-            using (new ProfilingScope(cmd, HDProfileId.PrepareVisibleDensityVolumeList.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.PrepareVisibleDensityVolumeList)))
             {
                 Vector3 camPosition = hdCamera.camera.transform.position;
                 Vector3 camOffset   = Vector3.zero;// World-origin-relative
@@ -651,7 +651,7 @@ namespace UnityEngine.Rendering.HighDefinition
             if (!Fog.IsVolumetricLightingEnabled(hdCamera))
                 return;
 
-            using (new ProfilingScope(cmd, HDProfileId.VolumeVoxelization.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.VolumeVoxelization)))
             {
                 var parameters = PrepareVolumeVoxelizationParameters(hdCamera);
                 VolumeVoxelizationPass(parameters, m_DensityBufferHandle, m_VisibleVolumeBoundsBuffer, m_VisibleVolumeDataBuffer, m_TileAndClusterData.bigTileLightList, cmd);
@@ -817,7 +817,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             var parameters = PrepareVolumetricLightingParameters(hdCamera, frameIndex);
 
-            using (new ProfilingScope(cmd, HDProfileId.VolumetricLighting.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.VolumetricLighting)))
             {
                 // It is safe to request these RTs even if they have not been allocated.
                 // The system will return NULL in that case.

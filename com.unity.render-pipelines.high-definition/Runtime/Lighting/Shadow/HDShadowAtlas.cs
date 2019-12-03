@@ -559,7 +559,7 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             ComputeShader shadowBlurMomentsCS = parameters.evsmShadowBlurMomentsCS;
 
-            using (new ProfilingScope(cmd, HDProfileId.RenderEVSMShadowMaps.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderEVSMShadowMaps)))
             {
                 int generateAndBlurMomentsKernel = shadowBlurMomentsCS.FindKernel("ConvertAndBlur");
                 int blurMomentsKernel = shadowBlurMomentsCS.FindKernel("Blur");
@@ -584,7 +584,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 int requestIdx = 0;
                 foreach (var shadowRequest in parameters.shadowRequests)
                 {
-                    using (new ProfilingScope(cmd, HDProfileId.RenderEVSMShadowMapsBlur.Get()))
+                    using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderEVSMShadowMapsBlur)))
                     {
                         int downsampledWidth = Mathf.CeilToInt(shadowRequest.atlasViewport.width * 0.5f);
                         int downsampledHeight = Mathf.CeilToInt(shadowRequest.atlasViewport.height * 0.5f);
@@ -625,7 +625,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 {
                     if (finalAtlasTexture[i] != 0)
                     {
-                        using (new ProfilingScope(cmd, HDProfileId.RenderEVSMShadowMapsCopyToAtlas.Get()))
+                        using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderEVSMShadowMapsCopyToAtlas)))
                         {
                             var shadowRequest = parameters.shadowRequests[i];
                             int downsampledWidth = Mathf.CeilToInt(shadowRequest.atlasViewport.width * 0.5f);
@@ -656,7 +656,7 @@ namespace UnityEngine.Rendering.HighDefinition
             ComputeShader momentCS = parameters.imShadowBlurMomentsCS;
             if (momentCS == null) return;
 
-            using (new ProfilingScope(cmd, HDProfileId.RenderMomentShadowMaps.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RenderMomentShadowMaps)))
             {
                 int computeMomentKernel = momentCS.FindKernel("ComputeMomentShadows");
                 int summedAreaHorizontalKernel = momentCS.FindKernel("MomentSummedAreaTableHorizontal");

@@ -127,7 +127,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             if (hdCamera.frameSettings.IsEnabled(FrameSettingsField.RayTracing))
             {
-                using (new ProfilingScope(cmd, HDProfileId.ScreenSpaceShadows.Get()))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.ScreenSpaceShadows)))
                 {
                     // First of all we handle the directional light
                     RenderDirectionalLightScreenSpaceShadow(cmd, hdCamera);
@@ -157,7 +157,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 // If the shadow is flagged as ray traced, we need to evaluate it completely
                 if (m_CurrentSunLightAdditionalLightData.WillRenderRayTracedShadow())
                 {
-                    using (new ProfilingScope(cmd, HDProfileId.RaytracingDirectionalLightShadow.Get()))
+                    using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingDirectionalLightShadow)))
                     {
                         // Request the intermediate buffers we shall be using
                         RTHandle intermediateBuffer0 = GetRayTracingBuffer(InternalRayTracingBuffers.RGBA0);
@@ -270,7 +270,7 @@ namespace UnityEngine.Rendering.HighDefinition
         }
         bool RenderLightScreenSpaceShadows(HDCamera hdCamera, CommandBuffer cmd)
         {
-            using (new ProfilingScope(cmd, HDProfileId.RaytracingLightShadow.Get()))
+            using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingLightShadow)))
             {
                 // Grab the history buffer
                 RTHandle shadowHistoryArray = hdCamera.GetCurrentFrameRT((int)HDCameraFrameHistoryType.RaytracedShadow)
@@ -287,7 +287,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 // Inject the ray-tracing sampling data
                 m_BlueNoise.BindDitheredRNGData8SPP(cmd);
 
-                using (new ProfilingScope(cmd, HDProfileId.RaytracingLightShadow.Get()))
+                using (new ProfilingScope(cmd, ProfilingSampler.Get(HDProfileId.RaytracingLightShadow)))
                 {
                     // Loop through all the potential screen space light shadows
                     for (int lightIdx = 0; lightIdx < m_ScreenSpaceShadowIndex; ++lightIdx)
