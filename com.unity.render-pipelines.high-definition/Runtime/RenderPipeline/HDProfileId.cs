@@ -9,6 +9,7 @@ namespace UnityEngine.Rendering.HighDefinition
         CopyDepthInTargetTexture,
         HTileForSSS,
         RenderSSAO,
+        ResolveStencilBuffer,
         HorizonSSAO,
         DenoiseSSAO,
         UpSampleSSAO,

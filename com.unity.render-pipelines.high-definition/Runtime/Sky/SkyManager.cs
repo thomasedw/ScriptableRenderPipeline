@@ -207,19 +207,19 @@ namespace UnityEngine.Rendering.HighDefinition
         public void UpdateCurrentSkySettings(HDCamera hdCamera)
         {
             hdCamera.UpdateCurrentSky(this);
-            }
+        }
 
         public void SetGlobalSkyData(CommandBuffer cmd, HDCamera hdCamera)
-            {
+        {
             if (IsCachedContextValid(hdCamera.lightingSky))
-                {
+            {
                 var renderer = m_CachedSkyContexts[hdCamera.lightingSky.cachedSkyRenderingContextId].renderer;
                 if (renderer != null)
-            {
+                {
                     m_BuiltinParameters.skySettings = hdCamera.lightingSky.skySettings;
                     renderer.SetGlobalSkyData(cmd, m_BuiltinParameters);
+                }
             }
-        }
         }
 
 #if UNITY_EDITOR
@@ -378,7 +378,7 @@ namespace UnityEngine.Rendering.HighDefinition
         internal void SetupAmbientProbe(HDCamera hdCamera)
         {
             // If a camera just returns from being disabled, sky is not setup yet for it.
-            if (hdCamera.lightingSky == null)
+            if (hdCamera.lightingSky == null && hdCamera.skyAmbientMode == SkyAmbientMode.Dynamic)
             {
                 RenderSettings.ambientMode = AmbientMode.Custom;
                 RenderSettings.ambientProbe = m_BlackAmbientProbe;
@@ -601,10 +601,7 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             ref var cachedContext = ref m_CachedSkyContexts[id];
             cachedContext.refCount--;
-            if (cachedContext.refCount == 0)
-            {
-                cachedContext.Reset();
-            }
+            Debug.Assert(cachedContext.refCount >= 0);
         }
 
         bool IsCachedContextValid(SkyUpdateContext skyContext)
@@ -728,7 +725,10 @@ namespace UnityEngine.Rendering.HighDefinition
 
             UpdateEnvironment(hdCamera, hdCamera.lightingSky, sunLight, m_UpdateRequired, ambientMode == SkyAmbientMode.Dynamic, ambientMode, frameIndex, cmd);
 
-            if (ambientMode == SkyAmbientMode.Static)
+            // Preview camera will have a different sun, therefore the hash for the static lighting sky will change and force a recomputation
+            // because we only maintain one static sky. Since we don't care that the static lighting may be a bit different in the preview we never recompute
+            // and we use the one from the main camera.
+            if (ambientMode == SkyAmbientMode.Static && hdCamera.camera.cameraType != CameraType.Preview)
             {
                 StaticLightingSky staticLightingSky = GetStaticLightingSky();
                 if (staticLightingSky != null)
@@ -771,7 +771,7 @@ namespace UnityEngine.Rendering.HighDefinition
             m_BuiltinParameters.skySettings = skyContext.skySettings;
         }
 
-        public void PreRenderSky(HDCamera hdCamera, Light sunLight, RTHandle colorBuffer, RTHandle depthBuffer, DebugDisplaySettings debugSettings, int frameIndex, CommandBuffer cmd)
+        public void PreRenderSky(HDCamera hdCamera, Light sunLight, RTHandle colorBuffer, RTHandle normalBuffer, RTHandle depthBuffer, DebugDisplaySettings debugSettings, int frameIndex, CommandBuffer cmd)
         {
             var skyContext = hdCamera.visualSky;
             if (skyContext.IsValid())
@@ -789,7 +789,11 @@ namespace UnityEngine.Rendering.HighDefinition
                 AcquireSkyRenderingContext(skyContext, skyHash);
                 var cachedContext = m_CachedSkyContexts[skyContext.cachedSkyRenderingContextId];
                 cachedContext.renderer.DoUpdate(m_BuiltinParameters);
-                if (depthBuffer == BuiltinSkyParameters.nullRT)
+                if (depthBuffer != BuiltinSkyParameters.nullRT && normalBuffer != BuiltinSkyParameters.nullRT)
+                {
+                    CoreUtils.SetRenderTarget(cmd, normalBuffer, depthBuffer);
+                }
+                else if (depthBuffer != BuiltinSkyParameters.nullRT)
                 {
                     CoreUtils.SetRenderTarget(cmd, depthBuffer);
                 }
