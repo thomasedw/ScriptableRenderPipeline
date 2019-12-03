@@ -46,6 +46,7 @@ namespace UnityEngine.Rendering.Universal
         public const string k_ShaderTagName = "UniversalPipeline";
 
         const string k_RenderCameraTag = "Render Camera";
+        static ProfilingSampler _CameraProfilingSampler = new ProfilingSampler(k_RenderCameraTag);
 
         public static float maxShadowBias
         {
@@ -84,7 +85,7 @@ namespace UnityEngine.Rendering.Universal
 
                 // We don't use SSBO in D3D because we can't figure out without adding shader variants if platforms is D3D10.
                 // We don't use SSBO on Nintendo Switch as UBO path is faster.
-                // However here we use same limits as SSBO path. 
+                // However here we use same limits as SSBO path.
                 var deviceType = SystemInfo.graphicsDeviceType;
                 if (deviceType == GraphicsDeviceType.Direct3D11 || deviceType == GraphicsDeviceType.Direct3D12 ||
                     deviceType == GraphicsDeviceType.Switch)
@@ -211,7 +212,7 @@ namespace UnityEngine.Rendering.Universal
 
             string tag = (asset.debugLevel >= PipelineDebugLevel.Profiling) ? camera.name: k_RenderCameraTag;
             CommandBuffer cmd = CommandBufferPool.Get(tag);
-            using (new ProfilingSample(cmd, tag))
+            using (new ProfilingScope(cmd, _CameraProfilingSampler))
             {
                 renderer.Clear();
                 renderer.SetupCullingParameters(ref cullingParameters, ref cameraData);

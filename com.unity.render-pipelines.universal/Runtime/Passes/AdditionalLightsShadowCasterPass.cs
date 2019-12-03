@@ -44,6 +44,7 @@ namespace UnityEngine.Rendering.Universal.Internal
         List<int> m_AdditionalShadowCastingLightIndicesMap = new List<int>();
         bool m_SupportsBoxFilterForShadows;
         const string m_ProfilerTag = "Render Additional Shadows";
+        ProfilingSampler m_ProfilingSampler = new ProfilingSampler("Render Additional Shadows");
 
         public AdditionalLightsShadowCasterPass(RenderPassEvent evt)
         {
@@ -256,7 +257,7 @@ namespace UnityEngine.Rendering.Universal.Internal
 
             bool additionalLightHasSoftShadows = false;
             CommandBuffer cmd = CommandBufferPool.Get(m_ProfilerTag);
-            using (new ProfilingSample(cmd, m_ProfilerTag))
+            using (new ProfilingScope(cmd, m_ProfilingSampler))
             {
                 bool anyShadowSliceRenderer = false;
                 int shadowSlicesCount = m_AdditionalShadowCastingLightIndices.Count;
@@ -310,7 +311,7 @@ namespace UnityEngine.Rendering.Universal.Internal
         void SetupAdditionalLightsShadowReceiverConstants(CommandBuffer cmd, ref ShadowData shadowData, bool softShadows)
         {
             int shadowLightsCount = m_AdditionalShadowCastingLightIndices.Count;
-            
+
             float invShadowAtlasWidth = 1.0f / shadowData.additionalLightsShadowmapWidth;
             float invShadowAtlasHeight = 1.0f / shadowData.additionalLightsShadowmapHeight;
             float invHalfShadowAtlasWidth = 0.5f * invShadowAtlasWidth;
