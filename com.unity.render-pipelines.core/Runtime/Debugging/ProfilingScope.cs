@@ -77,11 +77,17 @@ namespace UnityEngine.Rendering
 
         internal CustomSampler sampler { get; private set; }
         internal CustomSampler inlineSampler { get; private set; }
+        /// <summary>
+        /// Name of the Profiling Sampler
+        /// </summary>
         public string name { get; private set; }
 
         Recorder m_Recorder;
         Recorder m_InlineRecorder;
 
+        /// <summary>
+        /// Set to true to enable recording of profiling sampler timings.
+        /// </summary>
         public bool enableRecording
         {
             set
@@ -91,11 +97,29 @@ namespace UnityEngine.Rendering
             }
         }
 
+        /// <summary>
+        /// GPU Elapsed time in milliseconds.
+        /// </summary>
         public float gpuElapsedTime => m_Recorder.enabled ? m_Recorder.gpuElapsedNanoseconds / 1000000.0f : 0.0f;
+        /// <summary>
+        /// Number of times the Profiling Sampler has hit on the GPU
+        /// </summary>
         public int gpuSampleCount => m_Recorder.enabled ? m_Recorder.gpuSampleBlockCount : 0;
+        /// <summary>
+        /// CPU Elapsed time in milliseconds (Command Buffer execution).
+        /// </summary>
         public float cpuElapsedTime => m_Recorder.enabled ? m_Recorder.elapsedNanoseconds / 1000000.0f : 0.0f;
+        /// <summary>
+        /// Number of times the Profiling Sampler has hit on the CPU in the command buffer.
+        /// </summary>
         public int cpuSampleCount => m_Recorder.enabled ? m_Recorder.sampleBlockCount : 0;
+        /// <summary>
+        /// CPU Elapsed time in milliseconds (Direct execution).
+        /// </summary>
         public float inlineCpuElapsedTime => m_InlineRecorder.enabled ? m_InlineRecorder.elapsedNanoseconds / 1000000.0f : 0.0f;
+        /// <summary>
+        /// Number of times the Profiling Sampler has hit on the CPU.
+        /// </summary>
         public int inlineCpuSampleCount => m_InlineRecorder.enabled ? m_InlineRecorder.sampleBlockCount : 0;
 
         // Keep the constructor private
@@ -114,6 +138,11 @@ namespace UnityEngine.Rendering
         CustomSampler   m_Sampler;
         CustomSampler   m_InlineSampler;
 
+        /// <summary>
+        /// Profiling Scope constructor
+        /// </summary>
+        /// <param name="cmd">Command buffer used to add markers and compute execution timings.</param>
+        /// <param name="sampler">Profiling Sampler to be used for this scope.</param>
         public ProfilingScope(CommandBuffer cmd, ProfilingSampler sampler)
         {
             m_Name = sampler.name; // Don't use CustomSampler.name because it causes garbage
@@ -127,6 +156,9 @@ namespace UnityEngine.Rendering
             m_InlineSampler?.Begin();
         }
 
+        /// <summary>
+        ///  Dispose pattern implementation
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
@@ -166,7 +198,7 @@ namespace UnityEngine.Rendering
 #endif
 
 
-        [System.Obsolete("Please use ProfilingScope")]
+    [System.Obsolete("Please use ProfilingScope")]
     public struct ProfilingSample : IDisposable
     {
         readonly CommandBuffer m_Cmd;
