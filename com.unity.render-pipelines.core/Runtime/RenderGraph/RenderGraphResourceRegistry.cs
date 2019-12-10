@@ -376,8 +376,6 @@ namespace UnityEngine.Experimental.Rendering.RenderGraphModule
 
                     if (resource.desc.clearBuffer || m_RenderGraphDebug.clearRenderTargetsAtCreation)
                     {
-                        // Commented because string.Format causes garbage
-                        //using (new ProfilingScope(rgContext.cmd, string.Format("RenderGraph: Clear Buffer {0}", resourceDescMoved.desc.name)))
                         bool debugClear = m_RenderGraphDebug.clearRenderTargetsAtCreation && !resource.desc.clearBuffer;
                         var name = debugClear ? "RenderGraph: Clear Buffer (Debug)" : "RenderGraph: Clear Buffer";
                         using (new ProfilingScope(rgContext.cmd, ProfilingSampler.Get(RenderGraphProfileId.RenderGraphClear)))
