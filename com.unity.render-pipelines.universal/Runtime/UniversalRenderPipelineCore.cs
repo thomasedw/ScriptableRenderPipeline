@@ -254,7 +254,7 @@ namespace UnityEngine.Rendering.Universal
         };
     }
 
-    enum URPProfileId
+    internal enum URPProfileId
     {
         StopNaNs,
         SMAA,
