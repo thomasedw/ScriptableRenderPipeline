@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed inconsistent lighting between the forward renderer and the deferred renderer, that was caused by a missing normalize operation on vertex normals on some speedtree shader variants.
 - Fixed issue where XR Multiview failed to render when using URP Shader Graph Shaders
 - Fixed lazy initialization with last version of ResourceReloader
+- Fixed broken images in package documentation.
 
 ## [7.1.1] - 2019-09-05
 ### Upgrade Guide
