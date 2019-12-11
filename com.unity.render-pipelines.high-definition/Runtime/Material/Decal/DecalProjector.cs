@@ -228,11 +228,26 @@ namespace UnityEngine.Rendering.HighDefinition
             }
 
             Matrix4x4 sizeOffset = Matrix4x4.Translate(decalOffset) * Matrix4x4.Scale(decalSize);
+            m_Handle = DecalSystem.instance.AddDecal(position, rotation, Vector3.one, sizeOffset, m_DrawDistance, m_FadeScale, uvScaleBias, m_AffectsTransparency, m_Material, gameObject.layer, m_FadeFactor);
+            
 #if UNITY_EDITOR
             m_Layer = gameObject.layer;
+            // Handle scene visibility
+            UnityEditor.SceneVisibilityManager.visibilityChanged += UpdateDecalVisibility;
 #endif
-            m_Handle = DecalSystem.instance.AddDecal(position, rotation, Vector3.one, sizeOffset, m_DrawDistance, m_FadeScale, uvScaleBias, m_AffectsTransparency, m_Material, gameObject.layer, m_FadeFactor);
         }
+
+#if UNITY_EDITOR
+        void UpdateDecalVisibility()
+        {
+            Matrix4x4 sizeOffset = Matrix4x4.Translate(decalOffset) * Matrix4x4.Scale(decalSize);
+            // Fade out the decal when it is hidden by the scene visibility
+            if (UnityEditor.SceneVisibilityManager.instance.IsHidden(gameObject))
+                DecalSystem.instance.UpdateCachedData(position, rotation, sizeOffset, m_DrawDistance, m_FadeScale, uvScaleBias, m_AffectsTransparency, m_Handle, gameObject.layer, 0);
+            else
+                DecalSystem.instance.UpdateCachedData(position, rotation, sizeOffset, m_DrawDistance, m_FadeScale, uvScaleBias, m_AffectsTransparency, m_Handle, gameObject.layer, m_FadeFactor);
+        }
+#endif
 
         void OnDisable()
         {
