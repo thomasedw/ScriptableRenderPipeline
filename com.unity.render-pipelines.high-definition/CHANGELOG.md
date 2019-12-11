@@ -239,6 +239,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed issue with TAA history not initialising corretly scale factor for first frame
 - Fixed issue with stencil test of material classification not using the correct Mask (causing false positive and bad performance with forward material in deferred)
 - Fixed issue with History not reset when chaning antialiasing mode on camera
+- Fixed issue with volumetric data not being initialized if default settings have volumetric and reprojection off. 
 - Search field selects the appropriate fields in both project settings panels 'HDRP Default Settings' and 'Quality/HDRP'
 
 ### Changed
