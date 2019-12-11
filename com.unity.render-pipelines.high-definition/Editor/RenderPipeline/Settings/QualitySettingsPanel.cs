@@ -9,10 +9,17 @@ using System.Linq;
 
 namespace UnityEditor.Rendering.HighDefinition
 {
+    /// <summary>
+    /// Defines the provider of the quality settings panel for HDRP.
+    /// </summary>
     public class QualitySettingsPanel
     {
         static QualitySettingsPanelIMGUI s_IMGUIImpl = new QualitySettingsPanelIMGUI();
 
+        /// <summary>
+        /// Instantiate the <see cref="SettingsProvider"/> used for the Quality Settings Panel for the HDRP.
+        /// </summary>
+        /// <returns></returns>
         [SettingsProvider]
         public static SettingsProvider CreateSettingsProvider()
         {
