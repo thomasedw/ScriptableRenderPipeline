@@ -243,6 +243,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed issue with volumetric data not being initialized if default settings have volumetric and reprojection off. 
 - Fixed ray tracing reflection denoiser not applied in tier 1
 - Fixed the vibility of ray tracing related methods.
+- Fixed the scene visibility of decal projectors and density volumes
 
 ### Changed
 - Color buffer pyramid is not allocated anymore if neither refraction nor distortion are enabled
