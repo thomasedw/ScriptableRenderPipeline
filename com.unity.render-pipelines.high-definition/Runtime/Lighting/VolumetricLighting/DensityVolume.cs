@@ -163,7 +163,28 @@ namespace UnityEngine.Rendering.HighDefinition
         private void OnEnable()
         {
             DensityVolumeManager.manager.RegisterVolume(this);
+
+#if UNITY_EDITOR
+            // Handle scene visibility
+            UnityEditor.SceneVisibilityManager.visibilityChanged += UpdateDecalVisibility;
+#endif
         }
+
+#if UNITY_EDITOR
+        void UpdateDecalVisibility()
+        {
+            if (UnityEditor.SceneVisibilityManager.instance.IsHidden(gameObject))
+            {
+                if (DensityVolumeManager.manager.ContainsVolume(this))
+                    DensityVolumeManager.manager.DeRegisterVolume(this);
+            }
+            else
+            {
+                if (!DensityVolumeManager.manager.ContainsVolume(this))
+                    DensityVolumeManager.manager.RegisterVolume(this);
+            }
+        }
+#endif
 
         private void OnDisable()
         {
