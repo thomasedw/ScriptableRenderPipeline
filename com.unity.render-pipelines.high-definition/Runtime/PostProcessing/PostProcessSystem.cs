@@ -2441,15 +2441,18 @@ namespace UnityEngine.Rendering.HighDefinition
 
                 if (customPP is IPostProcessComponent pp && pp.IsActive())
                 {
-                    var destination = m_Pool.Get(Vector2.one, k_ColorFormat);
-                    CoreUtils.SetRenderTarget(cmd, destination);
-                    using (new ProfilingSample(cmd, customPP.name))
+                    if (!(camera.camera.cameraType == CameraType.SceneView && !customPP.visibleInSceneView))
                     {
-                        customPP.Render(cmd, camera, source, destination);
-                    }
-                    PoolSourceGuard(ref source, destination, colorBuffer);
+                        var destination = m_Pool.Get(Vector2.one, k_ColorFormat);
+                        CoreUtils.SetRenderTarget(cmd, destination);
+                        using (new ProfilingSample(cmd, customPP.name))
+                        {
+                            customPP.Render(cmd, camera, source, destination);
+                        }
+                        PoolSourceGuard(ref source, destination, colorBuffer);
 
-                    return true;
+                        return true;
+                    }
                 }
             }
 
