@@ -22,5 +22,8 @@ Install the following Editor and package versions to work with the 2D Renderer:
 The __2D Renderer__ should now be configured for your Project.
 
 
+
 __Note:__ If you have the experimental 2D Renderer enabled, some of the options related to 3D rendering in the Universal RP Asset will not have any impact on your final app or game.
+
+
 
