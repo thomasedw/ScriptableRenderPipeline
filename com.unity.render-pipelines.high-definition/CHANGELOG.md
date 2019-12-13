@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Reflections to the DXR Wizard
 - Added the possibility to have ray traced colored and semi-transparent shadows on directional lights.
 - Added a check in the custom post process template to throw an error if the default shader is not found.
+- Added a public virtual bool in the custom post processes API to specify if a post processes should be executed in the scene view.
 
 ### Fixed
 - Sorting, undo, labels, layout in the Lighting Explorer.
