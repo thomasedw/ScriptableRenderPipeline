@@ -306,6 +306,13 @@ namespace UnityEngine.Rendering.HighDefinition
         }
 
         /// <summary>
+        /// List all the materials that needs to be displayed with at the bottom of the component.
+        /// All the materials gathered by this method will be used to create a Material Editor and then can be edited directly on the custom pass.
+        /// </summary>
+        /// <returns>an enumerable of materials to show in the inspector. These materials can be null, the list is cleaned afterwards</returns>
+        public virtual IEnumerable<Material> RegisterMaterialForInspector() { yield break; }
+
+        /// <summary>
         /// Returns the render queue range associated with the custom render queue type
         /// </summary>
         /// <returns></returns>
