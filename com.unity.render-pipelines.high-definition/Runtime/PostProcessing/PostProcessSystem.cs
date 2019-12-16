@@ -2441,7 +2441,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
                 if (customPP is IPostProcessComponent pp && pp.IsActive())
                 {
-                    if (!(camera.camera.cameraType == CameraType.SceneView && !customPP.visibleInSceneView))
+                    if (camera.camera.cameraType != CameraType.SceneView || customPP.visibleInSceneView)
                     {
                         var destination = m_Pool.Get(Vector2.one, k_ColorFormat);
                         CoreUtils.SetRenderTarget(cmd, destination);
