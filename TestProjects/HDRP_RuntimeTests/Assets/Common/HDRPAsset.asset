@@ -244,7 +244,7 @@ MonoBehaviour:
     hdShadowInitParams:
       maxShadowRequests: 128
       directionalShadowsDepthBits: 32
-      shadowFilteringQuality: 2
+      shadowFilteringQuality: 1
       punctualLightShadowAtlas:
         shadowAtlasResolution: 4096
         shadowAtlasDepthBits: 32
@@ -269,7 +269,8 @@ MonoBehaviour:
       maxPunctualShadowMapResolution: 2048
       maxAreaShadowMapResolution: 2048
       supportScreenSpaceShadows: 0
-      maxScreenSpaceShadows: 2
+      maxScreenSpaceShadowSlots: 4
+      screenSpaceShadowBufferFormat: 48
     decalSettings:
       drawDistance: 1000
       atlasWidth: 4096
@@ -340,7 +341,8 @@ MonoBehaviour:
   availableMaterialQualityLevels: -1
   m_DefaultMaterialQualityLevel: 4
   diffusionProfileSettings: {fileID: 0}
-  diffusionProfileSettingsList: []
+  diffusionProfileSettingsList:
+  - {fileID: 11400000, guid: 2384dbf2c1c420f45a792fbc315fbfb1, type: 2}
   beforeTransparentCustomPostProcesses: []
   beforePostProcessCustomPostProcesses: []
   afterPostProcessCustomPostProcesses: []
