@@ -267,7 +267,7 @@ void BLUR_KERNEL_NAME(uint3 Gid : SV_GroupID, uint GI : SV_GroupIndex, uint3 GTi
 #ifdef FULL_RES
     _OcclusionTexture[COORD_TEXTURE2D_X(dispatchID.xy)] = OutputFinalAO(LoSSAO);
 #else
-    _AOPackedBlurred[COORD_TEXTURE2D_X(dispatchID.xy)] = asfloat(PackAOOutput(LoSSAO, 1.0f / DepthCache[Idx0 + 16]));
+    _AOPackedBlurred[COORD_TEXTURE2D_X(dispatchID.xy)] = PackAOOutput(LoSSAO, 1.0f / DepthCache[Idx0 + 16]);
 #endif
 
 }

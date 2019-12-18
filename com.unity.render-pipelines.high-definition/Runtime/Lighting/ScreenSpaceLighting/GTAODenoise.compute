@@ -155,8 +155,7 @@ void SPATIAL_DENOISE_KERNEL_NAME(uint3 dispatchThreadId : SV_DispatchThreadID)
     float final = Blur(dispatchThreadId.xy, centralDepth, centralAO);
 
 #if TO_TEMPORAL
-    // We need to output as float as gather4 on an integer texture is not always supported.
-    _AOPackedBlurred[COORD_TEXTURE2D_X(dispatchThreadId.xy)] = asfloat(PackAOOutput(final, centralDepth));
+    _AOPackedBlurred[COORD_TEXTURE2D_X(dispatchThreadId.xy)] = PackAOOutput(final, centralDepth);
 #else
     _OcclusionTexture[COORD_TEXTURE2D_X(dispatchThreadId.xy)] = OutputFinalAO(final);
 #endif
@@ -202,7 +201,7 @@ float3 FindMinMaxAvgAO(float2 centralPos)
     {
         for (int j = -1; j <= 1; ++j)
         {
-            uint data = asuint(LOAD_TEXTURE2D_X(_AOPackedBlurred, (uint2)centralPos + uint2(i, j)).x);
+            float data = LOAD_TEXTURE2D_X(_AOPackedBlurred, (uint2)centralPos + uint2(i, j)).x;
             float currAO, ignored;
             UnpackData(data, currAO, ignored);
             avg += currAO;
@@ -219,7 +218,7 @@ void TEMPORAL_DENOISE_KERNEL_NAME(uint3 dispatchThreadId : SV_DispatchThreadID)
 {
     UNITY_XR_ASSIGN_VIEW_INDEX(dispatchThreadId.z);
 
-    uint currFrameData = asuint(_AOPackedBlurred[COORD_TEXTURE2D_X(dispatchThreadId.xy)].x);
+    float currFrameData = _AOPackedBlurred[COORD_TEXTURE2D_X(dispatchThreadId.xy)].x;
     float currDepth, currAO;
     UnpackData(currFrameData, currAO, currDepth);
 
@@ -266,7 +265,7 @@ void TEMPORAL_DENOISE_KERNEL_NAME(uint3 dispatchThreadId : SV_DispatchThreadID)
 
 #ifdef HALF_RES
     // The conversion and the pow happens in upsample phase.
-    _OcclusionTexture[COORD_TEXTURE2D_X(dispatchThreadId.xy)] = asfloat(PackAOOutput(newAO, currDepth));
+    _OcclusionTexture[COORD_TEXTURE2D_X(dispatchThreadId.xy)] = PackAOOutput(newAO, currDepth);
 #else
     _OcclusionTexture[COORD_TEXTURE2D_X(dispatchThreadId.xy)] = OutputFinalAO(newAO);
 #endif

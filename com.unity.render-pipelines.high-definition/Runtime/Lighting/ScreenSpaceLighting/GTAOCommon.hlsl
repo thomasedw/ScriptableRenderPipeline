@@ -132,30 +132,32 @@ float GTAOFastAcos(float x)
 // --------------------------------------------
 // Output functions
 // --------------------------------------------
-uint PackAOOutput(float AO, float depth)
+float PackAOOutput(float AO, float depth)
 {
      // 23 depth,  8 bit AO.
     // Note: we keep the 1st bit empty as some issues arise with the asfloat(asuint()) combination. 
     uint packedVal = 0;
     packedVal = BitFieldInsert(0x000000ff, UnpackInt(AO, 8), packedVal);
     packedVal = BitFieldInsert(0x7fffff00, UnpackInt(depth, 23) << 8, packedVal);
-    return packedVal;
+
+    // We need to output as float as gather4 on an integer texture is not always supported.
+    return asfloat(packedVal);
 }
 
-void UnpackData(uint data, out float AO, out float depth)
+void UnpackData(float data, out float AO, out float depth)
 {
     // 23 depth,  8 bit AO.
     // Note: we keep the 1st bit empty as some issues arise with the asfloat(asuint()) combination. 
-    AO = UnpackUIntToFloat(data, 0, 8);
-    depth = UnpackUIntToFloat(data, 8, 23);
+    AO = UnpackUIntToFloat(asuint(data), 0, 8);
+    depth = UnpackUIntToFloat(asuint(data), 8, 23);
 }
 
 void UnpackGatheredData(float4 data, out float4 AOs, out float4 depths)
 {
-    UnpackData(asuint(data.x), AOs.x, depths.x);
-    UnpackData(asuint(data.y), AOs.y, depths.y);
-    UnpackData(asuint(data.z), AOs.z, depths.z);
-    UnpackData(asuint(data.w), AOs.w, depths.w);
+    UnpackData(data.x, AOs.x, depths.x);
+    UnpackData(data.y, AOs.y, depths.y);
+    UnpackData(data.z, AOs.z, depths.z);
+    UnpackData(data.w, AOs.w, depths.w);
 }
 
 void GatherAOData(TEXTURE2D_X_FLOAT(_AODataSource), float2 UV, out float4 AOs, out float4 depths)

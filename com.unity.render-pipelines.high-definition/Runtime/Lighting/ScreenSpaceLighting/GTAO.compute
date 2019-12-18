@@ -219,6 +219,5 @@ void GTAO_KERNEL_NAME(uint3 dispatchThreadId : SV_DispatchThreadID)
         integral = 1;
     }
 
-    // We need to output as float as gather4 on an integer texture is not always supported.
     _AOPackedData[COORD_TEXTURE2D_X(dispatchThreadId.xy)] =  asfloat(PackAOOutput(saturate(integral), currDepth));
 }
