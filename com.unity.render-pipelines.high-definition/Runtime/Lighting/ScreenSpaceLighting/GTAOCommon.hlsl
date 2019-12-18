@@ -134,17 +134,20 @@ float GTAOFastAcos(float x)
 // --------------------------------------------
 uint PackAOOutput(float AO, float depth)
 {
-     // 24 depth,  8 bit AO
+     // 23 depth,  8 bit AO.
+    // Note: we keep the 1st bit empty as some issues arise with the asfloat(asuint()) combination. 
     uint packedVal = 0;
     packedVal = BitFieldInsert(0x000000ff, UnpackInt(AO, 8), packedVal);
-    packedVal = BitFieldInsert(0xffffff00, UnpackInt(depth, 24) << 8, packedVal);
+    packedVal = BitFieldInsert(0x7fffff00, UnpackInt(depth, 23) << 8, packedVal);
     return packedVal;
 }
 
 void UnpackData(uint data, out float AO, out float depth)
 {
+    // 23 depth,  8 bit AO.
+    // Note: we keep the 1st bit empty as some issues arise with the asfloat(asuint()) combination. 
     AO = UnpackUIntToFloat(data, 0, 8);
-    depth = UnpackUIntToFloat(data, 8, 24);
+    depth = UnpackUIntToFloat(data, 8, 23);
 }
 
 void UnpackGatheredData(float4 data, out float4 AOs, out float4 depths)
