@@ -38,14 +38,14 @@ float BilateralWeight(float sampleDepth, float linearCentralDepth)
 
 float Blur(float2 centralPos, out float centralDepth, out float centralAO)
 {
+    float4 UnpackedAOs, UnpackedDepths;
+
     float2 UV = ClampAndScaleUVForBilinear((centralPos + float2(0.0, 0.0)) * _AOBufferSize.zw, _AOBufferSize.zw);
 #if NEED_TEX_SPACE_GATHER
     UV = centralPos;
 #endif
-    uint4 data0 = GATHER_TEXTURE2D_X(_AOPackedData, s_linear_clamp_sampler, UV);
+    GatherAOData(_AOPackedData, UV, UnpackedAOs, UnpackedDepths);
 
-    float4 UnpackedAOs, UnpackedDepths;
-    UnpackGatheredData(data0, UnpackedAOs, UnpackedDepths);
     centralDepth = UnpackedDepths.y;
     float linearCentralDepth = LinearEyeDepth(centralDepth, _ZBufferParams);
     centralAO = UnpackedAOs.y;
@@ -69,11 +69,10 @@ float Blur(float2 centralPos, out float centralDepth, out float centralAO)
 
     // Second set of gathered data.
     UV = ClampAndScaleUVForBilinear((centralPos + float2(2.0, 0.0)) * _AOBufferSize.zw, _AOBufferSize.zw);
-    uint4 data1 = GATHER_TEXTURE2D_X(_AOPackedData, s_linear_clamp_sampler, UV);
 #if NEED_TEX_SPACE_GATHER
     UV = centralPos + float2(2.0, 0.0);
 #endif
-    UnpackGatheredData(data1, UnpackedAOs, UnpackedDepths);
+    GatherAOData(_AOPackedData, UV, UnpackedAOs, UnpackedDepths);
 
     weight = BilateralWeight(UnpackedDepths.x, linearCentralDepth);
     total += weight * UnpackedAOs.x;
@@ -97,8 +96,7 @@ float Blur(float2 centralPos, out float centralDepth, out float centralAO)
 #if NEED_TEX_SPACE_GATHER
     UV = centralPos + float2(0.0, 2.0);
 #endif
-    uint4 data2 = GATHER_TEXTURE2D_X(_AOPackedData, s_linear_clamp_sampler, UV);
-    UnpackGatheredData(data2, UnpackedAOs, UnpackedDepths);
+    GatherAOData(_AOPackedData, UV, UnpackedAOs, UnpackedDepths);
 
     weight = BilateralWeight(UnpackedDepths.x, linearCentralDepth);
     total += weight * UnpackedAOs.x;
@@ -121,8 +119,7 @@ float Blur(float2 centralPos, out float centralDepth, out float centralAO)
 #if NEED_TEX_SPACE_GATHER
     UV = centralPos + float2(2.0, 2.0);
 #endif
-    uint4 data3 = GATHER_TEXTURE2D_X(_AOPackedData, s_linear_clamp_sampler, UV);
-    UnpackGatheredData(data3, UnpackedAOs, UnpackedDepths);
+    GatherAOData(_AOPackedData, UV, UnpackedAOs, UnpackedDepths);
 
     weight = BilateralWeight(UnpackedDepths.x, linearCentralDepth);
     total += weight * UnpackedAOs.x;

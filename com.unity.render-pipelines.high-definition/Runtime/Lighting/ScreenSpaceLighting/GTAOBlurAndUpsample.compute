@@ -54,9 +54,8 @@ void PrefetchData(uint index, float2 uv)
     uv *= _AOBufferSize.xy;
 #endif
 
-    uint4 data = GATHER_TEXTURE2D_X(_AOPackedData, s_linear_clamp_sampler, uv);
     float4 UnpackedAOs, UnpackedDepths;
-    UnpackGatheredData(data, UnpackedAOs, UnpackedDepths);
+    GatherAOData(_AOPackedData, uv, UnpackedAOs, UnpackedDepths);
 
     AOCache1[index] = UnpackedAOs.w;
     AOCache1[index + 1] = UnpackedAOs.z;
@@ -222,9 +221,8 @@ void UPSAMPLE_KERNEL(uint3 DTid : SV_DispatchThreadID)
     UV1.y *= 2.0f / 3.0f;
 #endif
 
-    uint4 data = GATHER_TEXTURE2D_X(_AOPackedData, s_linear_clamp_sampler, UV0);
     float4 UnpackedAOs, UnpackedDepths;
-    UnpackGatheredData(data, UnpackedAOs, UnpackedDepths);
+    GatherAOData(_AOPackedData, UV0, UnpackedAOs, UnpackedDepths);
 
     int2 OutST = DTid.xy << 1;
 
