@@ -256,6 +256,9 @@ namespace UnityEngine.Rendering.HighDefinition
                 DecalSystem.instance.RemoveDecal(m_Handle);
                 m_Handle = null;
             }
+#if UNITY_EDITOR
+            UnityEditor.SceneVisibilityManager.visibilityChanged -= UpdateDecalVisibility;
+#endif
         }
 
         /// <summary>

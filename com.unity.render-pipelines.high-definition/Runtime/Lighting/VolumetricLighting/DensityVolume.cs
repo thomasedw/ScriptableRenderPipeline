@@ -189,6 +189,10 @@ namespace UnityEngine.Rendering.HighDefinition
         private void OnDisable()
         {
             DensityVolumeManager.manager.DeRegisterVolume(this);
+
+#if UNITY_EDITOR
+            UnityEditor.SceneVisibilityManager.visibilityChanged -= UpdateDecalVisibility;
+#endif
         }
 
         private void Update()
