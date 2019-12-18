@@ -143,7 +143,7 @@ float HorizonLoop(float3 positionVS, float3 V, float2 rayStart, float2 rayDir, f
     return maxHorizon;
 }
 
-RW_TEXTURE2D_X(uint, _AOPackedData);
+RW_TEXTURE2D_X(float, _AOPackedData);
 
 [numthreads(8,8,1)]
 void GTAO_KERNEL_NAME(uint3 dispatchThreadId : SV_DispatchThreadID)
@@ -219,5 +219,6 @@ void GTAO_KERNEL_NAME(uint3 dispatchThreadId : SV_DispatchThreadID)
         integral = 1;
     }
 
-    _AOPackedData[COORD_TEXTURE2D_X(dispatchThreadId.xy)] =  PackAOOutput(saturate(integral), currDepth);
+    // We need to output as float as gather4 on an integer texture is not always supported.
+    _AOPackedData[COORD_TEXTURE2D_X(dispatchThreadId.xy)] =  asfloat(PackAOOutput(saturate(integral), currDepth));
 }

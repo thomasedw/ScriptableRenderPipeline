@@ -147,17 +147,17 @@ void UnpackData(uint data, out float AO, out float depth)
     depth = UnpackUIntToFloat(data, 8, 24);
 }
 
-void UnpackGatheredData(uint4 data, out float4 AOs, out float4 depths)
+void UnpackGatheredData(float4 data, out float4 AOs, out float4 depths)
 {
-    UnpackData(data.x, AOs.x, depths.x);
-    UnpackData(data.y, AOs.y, depths.y);
-    UnpackData(data.z, AOs.z, depths.z);
-    UnpackData(data.w, AOs.w, depths.w);
+    UnpackData(asuint(data.x), AOs.x, depths.x);
+    UnpackData(asuint(data.y), AOs.y, depths.y);
+    UnpackData(asuint(data.z), AOs.z, depths.z);
+    UnpackData(asuint(data.w), AOs.w, depths.w);
 }
 
-void GatherAOData(TEXTURE2D_X_UINT(_AODataSource), float2 UV, out float4 AOs, out float4 depths)
+void GatherAOData(TEXTURE2D_X_FLOAT(_AODataSource), float2 UV, out float4 AOs, out float4 depths)
 {
-    uint4 data = GATHER_TEXTURE2D_X(_AODataSource, s_linear_clamp_sampler, UV);
+    float4 data = GATHER_TEXTURE2D_X(_AODataSource, s_point_clamp_sampler, UV);
     UnpackGatheredData(data, AOs, depths);
 }
 
