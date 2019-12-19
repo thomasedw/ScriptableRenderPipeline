@@ -1780,8 +1780,6 @@ namespace UnityEngine.Rendering.HighDefinition
             foreach (HDAdditionalLightData lightData in m_ScreenSpaceShadowsUnion)
             {
                 lightData.previousTransform = lightData.transform.localToWorldMatrix;
-                lightData.previousScreenSpaceShadowIndex = lightData.screenSpaceShadowIndex;
-                lightData.previousScreenSpaceShadowSlot = lightData.screenSpaceShadowSlot;
             }
         }
 
