@@ -259,6 +259,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed CustomPassSampleCameraColor scale issue when called from Before Transparent injection point.
 - Fixed corruption of AO in baked probes.
 - Fixed issue with upgrade of projects that still had Very High as shadow filtering quality.
+- Fixed issue that caused Distortion UI to appear in Lit.
+- Fixed several issues with decal duplicating when editing them.
+- Fixed initialization of volumetric buffer params (1204159)
+- Fixed an issue where frame count was incorrectly reset for the game view, causing temporal processes to fail.
 - Fixed issues on some GPU that do not support gathers on integer textures.
 
 ### Changed
@@ -303,6 +307,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Reduced the constrained distance for temporal reprojection of ray tracing denoising
 - Removed shadow near plane from the Directional Light Shadow UI.
 - Improved the performances of custom pass culling.
+- The scene view camera now replicates the physical parameters from the camera tagged as "MainCamera".
 
 ## [7.1.1] - 2019-09-05
 
