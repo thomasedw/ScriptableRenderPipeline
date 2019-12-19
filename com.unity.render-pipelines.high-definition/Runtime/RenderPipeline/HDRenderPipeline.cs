@@ -1951,6 +1951,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 // If objects motion vectors if enabled, this will render the objects with motion vector into the target buffers (in addition to the depth)
                 // Note: An object with motion vector must not be render in the prepass otherwise we can have motion vector write that should have been rejected
                 RenderObjectsMotionVectors(cullingResults, hdCamera, renderContext, cmd);
+                RenderCameraMotionVectors(cullingResults, hdCamera, renderContext, cmd);
             }
 
             PreRenderSky(hdCamera, cmd);
@@ -1978,9 +1979,9 @@ namespace UnityEngine.Rendering.HighDefinition
             {
                 // See the call RenderObjectsMotionVectors() above and comment
                 RenderObjectsMotionVectors(cullingResults, hdCamera, renderContext, cmd);
+                RenderCameraMotionVectors(cullingResults, hdCamera, renderContext, cmd);
             }
 
-            RenderCameraMotionVectors(cullingResults, hdCamera, renderContext, cmd);
 
 #if UNITY_EDITOR
             var showGizmos = camera.cameraType == CameraType.SceneView ||
