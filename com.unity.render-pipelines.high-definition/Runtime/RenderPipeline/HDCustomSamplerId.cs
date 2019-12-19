@@ -91,6 +91,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         // Misc
         VolumeUpdate,
+        MSAAResolves,
 
         // Low res transparency
         DownsampleDepth,
