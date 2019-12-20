@@ -263,6 +263,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed several issues with decal duplicating when editing them.
 - Fixed initialization of volumetric buffer params (1204159)
 - Fixed an issue where frame count was incorrectly reset for the game view, causing temporal processes to fail.
+- Fixed an issue where entering playmode while the light editor is opened would produce null reference exceptions.
 
 ### Changed
 - Color buffer pyramid is not allocated anymore if neither refraction nor distortion are enabled
