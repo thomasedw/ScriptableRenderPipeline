@@ -9,6 +9,9 @@ public class Wave : MonoBehaviour
     public float shift = 0.1f;
     public float speed = 0.5f;
 
+    [HideInInspector]
+    public float time;
+
     List<Transform> children = new List<Transform>();
     List<Vector3> startPos = new List<Vector3>();
 
@@ -33,7 +36,6 @@ public class Wave : MonoBehaviour
                 break;
             }
 
-            float time = (float)Time.frameCount / 60f;
             children[i].transform.position = startPos[i] + children[i].transform.forward * Mathf.Sin(children[i].transform.position.x * shift + time * speed) * amplitude;
         }
     }
